@@ -4,7 +4,7 @@ import { decorators } from 'jm-egg-framework';
 import TaskConfigOrm from '../model/taskConfig';
 import { TaskConfigPaginationRequest, TaskConfigPaginationResponse, TaskConfigSaveRequest, TaskConfigSaveResponse} from '../model/task';
 import { TaskState } from '../model/taskConst';
-import { EValid } from '@jv/jv-models';
+import { EValid } from '../model/interface/enumType';
 
 export default class TaskController extends Controller {
     

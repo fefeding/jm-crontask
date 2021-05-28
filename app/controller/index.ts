@@ -1,5 +1,4 @@
 import { Context, Controller } from 'egg';
-import { decorators } from 'jm-egg-framework';
 
 export default class IndexController extends Controller {
     /**

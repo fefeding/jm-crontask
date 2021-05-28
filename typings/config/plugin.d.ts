@@ -15,7 +15,7 @@ import 'egg-static';
 import 'egg-jsonp';
 import 'egg-view';
 import 'egg-view-vue-ssr';
-import 'jm-egg-framework';
+import 'egg-cache';
 import 'egg-cors';
 import 'egg-webpack';
 import 'egg-webpack-vue';
@@ -35,8 +35,7 @@ declare module 'egg' {
     jsonp?: EggPluginItem;
     view?: EggPluginItem;
     vuessr?: EggPluginItem;
-    jvCommon?: EggPluginItem;
-    jvLog?: EggPluginItem;
+    cache?: EggPluginItem;
     cors?: EggPluginItem;
     webpack?: EggPluginItem;
     webpackvue?: EggPluginItem;

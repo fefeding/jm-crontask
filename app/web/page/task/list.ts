@@ -3,14 +3,11 @@ import { Vue, Component, Emit } from 'vue-property-decorator';
 import { TaskConfigPaginationRequest, TaskConfigPaginationResponse, TaskConfigSaveRequest, TaskConfigSaveResponse} from '../../../model/task';
 import {TaskState, TaskTimeSize} from '../../../model/taskConst';
 
-import StaffUserName from '@jv/jv-account/app/web/component/controls/user';
-
 import editTask from './edit';
 
 @Component({
     components: {
         editTask,
-        StaffUserName
     }
 })
 export default class TaskView extends Vue {

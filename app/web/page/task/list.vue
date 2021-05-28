@@ -55,10 +55,6 @@
             prop="updater"
             label="最近修改人"
             width="100">
-            <template slot-scope="scope">
-                <StaffUserName
-        style="max-height: 30px;" :staffId="scope.row.updater" domain=""></StaffUserName>
-              </template>
         </el-table-column>
         <el-table-column
           prop="lastRunTime"

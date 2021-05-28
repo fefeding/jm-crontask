@@ -1,4 +1,4 @@
-import Message from '@jv/jv-models/baseServer/message';
+import Message from '../model/interface/message';
 import { IHelper } from 'egg';
 
 export default {

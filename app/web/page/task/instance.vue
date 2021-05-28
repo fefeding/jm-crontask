@@ -67,10 +67,6 @@
         <el-table-column
             prop="updater"
             label="最近修改人">
-            <template slot-scope="scope">
-                <StaffUserName :staffId="scope.row.creator" domain=""
-        style="max-height: 30px;"></StaffUserName>
-              </template>
         </el-table-column>
         <el-table-column
           label="操作"

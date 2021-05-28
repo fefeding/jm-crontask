@@ -36,6 +36,7 @@
     "extend": "~3.0.0",
     "font-awesome": "^4.7.0",
     "ip": "^1.1.5",
+    "jm-egg-framework": "^1.0.10",
     "lodash": "^4.17.4",
     "lodash-id": "^0.14.0",
     "lowdb": "^1.0.0",

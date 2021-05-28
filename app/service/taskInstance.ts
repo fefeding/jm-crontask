@@ -166,9 +166,9 @@ export default class TaskInstanceService extends BaseTypeService<TaskInstanceOrm
             //console.log(data);
             // 发送一个机器人消息
             this.ctx.helper.postTaskMessage(data);
-            const rsp = await this.ctx.sendWKMsg(data);
+            //const rsp = await this.ctx.sendWKMsg(data);
             // console.log(rsp);
-            return rsp;
+            //return rsp;
         }
         catch(e) {
             console.log(e);

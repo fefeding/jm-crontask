@@ -7,7 +7,7 @@ import TaskConfigOrm from '../model/taskConfig';
 
 import TaskInstanceOrm from '../model/taskInstance';
 import { Connection, QueryRunner } from 'typeorm';
-import { EValid } from '@jv/jv-models';
+import { EValid } from '../model/interface/enumType';
 import { TaskLockKeys, TaskState, TaskTimeSize } from '../model/taskConst';
 import TaskLockOrm from '../model/taskLock';
 

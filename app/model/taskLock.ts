@@ -1,7 +1,7 @@
 'use strict';
 import { Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn } from 'typeorm';
 
-import { BaseORM } from '@jv/jv-models';
+import { BaseORM } from './baseORM';
 
 
 @Entity('t_task_lock')

@@ -1,7 +1,7 @@
 'use strict';
 import { Entity, CreateDateColumn, UpdateDateColumn, PrimaryGeneratedColumn, Column, PrimaryColumn, Index, OneToOne, JoinColumn } from 'typeorm';
 
-import { BaseORM } from '@jv/jv-models';
+import { BaseORM } from './baseORM';
 import TaskConfigORM from './taskConfig';
 import {TaskStatus} from './taskConst';
 

@@ -1,9 +1,9 @@
 
 
-import { decorators } from 'jm-egg-framework';
-import {Request} from '@jv/jv-models';
-import {Response} from '@jv/jv-models';
-import { PageRequest, PageResponse } from '@jv/jv-models';
+import decorators from '../lib/decorator';
+import {Request} from './interface/request';
+import {Response} from './interface/response';
+import { PageRequest, PageResponse } from './interface/pagination';
 import { TaskTimeSize, TaskState } from './taskConst';
 
 export interface TaskConfig {

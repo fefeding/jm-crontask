@@ -28,7 +28,7 @@ export default (appInfo: EggAppConfig) => {
         host: '127.0.0.1',
         port: '3306',
         username: 'root',
-        password: '123456',
+        password: 'jv1234',
         database: 'db_jv_crontask',
         charset: 'utf8',
         useUTC: true,
