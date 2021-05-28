@@ -56,7 +56,10 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
             return result;
         }
         catch(e) {
-            console.log(e);
+            //console.log(e);
+            if(e.code === 'ER_LOCK_WAIT_TIMEOUT') {
+                console.log('锁等待超时，暂时退出当前执行');
+            }
             await qryRunner.rollbackTransaction();
         }
         finally {

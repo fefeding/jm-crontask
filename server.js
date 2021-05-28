@@ -24,7 +24,7 @@ async function start(options) {
             }
         });
         // 合并tars配置
-        app.config.common = Object.assign(app.config.common, commonConf);
+        if(commonConf) app.config.common = Object.assign(app.config.common, commonConf);
     }
     catch(e) {
         console.log(e);
