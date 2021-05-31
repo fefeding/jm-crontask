@@ -100,6 +100,31 @@ export default class Edit extends Vue {
             this.taskData.watcher = '';
             
         }
+
+        this.taskScript = this.taskScript || `
+        console.log('开始demo');
+
+        const options = {
+          url: 'http://127.0.0.1:8082/api/console/proxy?path=_sql%3Fformat%3Djson%26pretty%3Dtrue&method=POST',
+          method: 'POST',
+          headers: {
+          "kbn-version": "7.5.1"
+          },
+          data: {
+            "query":"select left(\"timestamp\", 16) as the_time, count(\"cmdname\") as req_num  from \"jv-access-7.5.1-2020.11.10\"   where \"svr\"='AsyncHttpAccServer'  group by the_time  order by the_time asc",
+            "time_zone": "Asia/Shanghai"
+          }
+        };
+        
+        const res = await ctx.helper.curl(options);
+        
+        
+        if(res.rows) {
+            const connection = await ctx.service.base.getConnection('db_jv_ba');
+            const sql = 'insert into t_svr_req_data(req_time, req_num) values (?, ?)';
+            const data = [];
+            await connection.query(sql, [['2020-11-17 00:00', 12]]);
+        }`;
     }
 
     async save() {

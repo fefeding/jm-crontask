@@ -17,3 +17,5 @@
 * 登录态
  > 现写死在 `app/middleware/access.ts` 中，请自行处理
 
+* 任务编写请关注：`app/service/taskIntance.ts` 中的 `runTask` 函数。
+
