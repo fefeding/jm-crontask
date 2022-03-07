@@ -49,7 +49,7 @@ export default (appInfo: EggAppConfig) => {
     config.apiAccess = {
         enabled: true, // false 表示不启用鉴权
         timeout: 300000, // timestamp超时设置，不配不检查超时
-        accessKey: 'jm.20191119' // 用来计算token的当前系统唯一key
+        accessKey: 'jm.2022' // 用来计算token的当前系统唯一key
     };
 
     // 中间件

@@ -19,6 +19,7 @@ module.exports = {
         typescript: true
     },
     plugins: {
+        imagemini: false,
         copy: [
             {
                 from: 'app/web/asset',
