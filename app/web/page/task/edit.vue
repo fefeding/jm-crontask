@@ -35,8 +35,15 @@
                 <el-input v-model="taskData.watcher" maxlength="64" placeholder="输入关注员工ID,用|分隔" show-word-limit></el-input>
             </el-form-item>
             <el-form-item label="脚本">
-                <codemirror v-model="taskScript" :options="codeJSONOptions" style="height: 800px;"  />
-            </el-form-item>            
+                <!--<codemirror v-model="taskScript" :options="codeJSONOptions" style="height: 800px;"  />-->
+                <VAceEditor
+                    :key="`taskScript_${taskData.id}`"
+                    v-model="taskScript"
+                    lang="javascript"
+                    theme="chrome"
+                    style="height: 800px"
+                />
+            </el-form-item>
             <el-form-item>
                 <el-button @click="$router.go(-1)">取消</el-button>
                 <el-button type="primary" @click="save()">保存</el-button>
@@ -44,7 +51,7 @@
         </el-form>
     </div>
 </template>
-<style>
+<style scoped>
 .el-table .unique-row {
     background: #f0f9eb;
 }

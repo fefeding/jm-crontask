@@ -1,22 +1,20 @@
 import { Vue, Component, Watch, Prop } from 'vue-property-decorator';
-
-import 'codemirror/lib/codemirror.css';
-// import language js
-import 'codemirror/mode/javascript/javascript.js'
-import { codemirror } from 'vue-codemirror';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/base16-dark.css';
+import VAceEditor from "vue2-ace-editor";
+import "brace/mode/javascript";
+import "brace/theme/chrome";
+import "brace/snippets/javascript";
 import TaskConfig from '../../../model/taskConfig';
 import {TaskState, TaskTimeSize} from '../../../model/taskConst';
-
+import {cron} from 'vue-cron';
 @Component({
     components: {
-        codemirror
+        VAceEditor,
+        cron
     }
 })
 export default class Edit extends Vue {
     @Prop()
-    private id: number;
+    private id: number = 0;
 
     private codeJSONOptions = {
         tabSize: 4,
@@ -44,9 +42,9 @@ export default class Edit extends Vue {
     private taskScript = '';
 
     // 任务执行规则值，数字和时间之间切换可能会报错。这里做下处理
-    get timeValue() {        
+    get timeValue() {
         if(this.taskData.timeSize === TaskTimeSize.day || this.taskData.timeSize === TaskTimeSize.single) {
-            
+
             if(/^\d+$/.test(this.taskData.timeValue)) {
                 this.taskData.timeValue = '';
             }
@@ -58,7 +56,7 @@ export default class Edit extends Vue {
             }
         }
         else if(!/^\d+$/.test(this.taskData.timeValue)) {
-            
+
             this.taskData.timeValue = '1';
         }
         return this.taskData.timeValue;
@@ -67,7 +65,7 @@ export default class Edit extends Vue {
         this.taskData.timeValue = v;
     }
 
-    async mounted() {  
+    async mounted() {
         this.query(this.$route);
     }
 
@@ -75,7 +73,7 @@ export default class Edit extends Vue {
     @Watch('$route')
     @Watch('id')
     async query(newRoute) {
-        
+
         newRoute = newRoute || this.$route;
         const id = Number(newRoute.query?.id || 0) || this.id;
         if(id > 0) {
@@ -98,7 +96,7 @@ export default class Edit extends Vue {
             this.taskData.state = TaskState.init,
             this.taskData.timeValue = '';
             this.taskData.watcher = '';
-            
+
         }
 
         this.taskScript = this.taskScript || `
@@ -115,10 +113,10 @@ export default class Edit extends Vue {
             "time_zone": "Asia/Shanghai"
           }
         };
-        
+
         const res = await ctx.helper.curl(options);
-        
-        
+
+
         if(res.rows) {
             const connection = await ctx.service.base.getConnection('db_jv_ba');
             const sql = 'insert into t_svr_req_data(req_time, req_num) values (?, ?)';
@@ -146,7 +144,7 @@ export default class Edit extends Vue {
 
     // 执行方式列表
     get TimeTypeOptions() {
-        
+
         const options = [] as any;
         for(let k in TaskTimeSize) {
             const v = Number(k);

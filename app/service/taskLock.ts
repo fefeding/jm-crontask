@@ -21,7 +21,7 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
             //console.log(lockKey, ' 等待锁');
 
             // 开启事务
-            await qryRunner.startTransaction();            
+            await qryRunner.startTransaction();
 
             const queryBuilder = (await this.getRespository<TaskLockOrm>(this.dbName, TaskLockOrm))
                                 .createQueryBuilder('taskLock', qryRunner);
@@ -32,7 +32,7 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
             })
             .useTransaction(true)
             .setLock('pessimistic_write');
-            
+
             let lock = await qry.getOne();
             if(!lock) {
                 const newLock = new TaskLockOrm();
@@ -45,7 +45,7 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
 
                 lock = await qry.getOne();
             }
-            
+
             //console.log(lockKey, '锁定');
 
             const result = await fun(qryRunner);// 当前事务中执行业务逻辑
@@ -57,6 +57,7 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
         }
         catch(e) {
             //console.log(e);
+            // @ts-ignore
             if(e.code === 'ER_LOCK_WAIT_TIMEOUT') {
                 console.log('锁等待超时，暂时退出当前执行');
             }

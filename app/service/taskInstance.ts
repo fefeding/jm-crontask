@@ -102,6 +102,7 @@ export default class TaskInstanceService extends BaseTypeService<TaskInstanceOrm
             instance.status = TaskStatus.failed;
 
             // 失败发送消息
+            // @ts-ignore
             this.sendFaildMsg(instance, e.message || e);
         }
 
