@@ -1,23 +1,15 @@
-/// <reference path="./typings/index.d.ts" />
-/// <reference path="./app/web/index.d.ts" />
-import 'jm-egg-framework';
+import { type Session } from '@fefeding/common/dist/models/account/session';
 
-declare module 'egg' {
-    interface Application {
+declare module '@midwayjs/koa/dist/interface' {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface Context {
         /**
-         * 初始化DB状态， 0=无状态,1=初始化中，2=已完成
+         * 当前登陆态
          */
-        __initDBState: 0 | 1 | 2;
-    }
-
-    interface Context {}
-
-    interface IHelper{
+        currentSession?: Session;
         /**
-         * 请求demo服务接口
-         * @param this helper对象
-         * @param data 请求参数
+         * 当前登陆态token
          */
-        requestDemoServer<req, res>(data: req): Promise<res>;
+        auth_token?: string;
     }
 }

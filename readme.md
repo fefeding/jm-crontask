@@ -1,21 +1,47 @@
-# 计划任务系统
+# my_midway_project
 
-* 部署
-```js
-> git clone https://github.com/jiamao/jm-crontask.git
-> cd jm-crontask
-> npm i
+## QuickStart
+
+<!-- add docs here for user -->
+
+see [midway docs][midway] for more detail.
+
+### Development
+
+```bash
+$ npm i
+$ npm run dev
+$ open http://localhost:7001/
 ```
 
-> 修改 `config/config.local.ts`中的数据配置库
+### Deploy
 
-> 如果初次运行，需要创建表，可以把DB配置中的 `synchronize: false`,  设为`true`，会自动创建表。当发布上线后请把它置为`false`，以免不必要的修改。
+```bash
+$ npm start
+```
 
-> `npm run dev` 即可启动
+### npm scripts
+
+- Use `npm run lint` to check code style.
+- Use `npm test` to run unit test.
 
 
-* 登录态
- > 现写死在 `app/middleware/access.ts` 中，请自行处理
+[midway]: https://midwayjs.org
 
-* 任务编写请关注：`app/service/taskIntance.ts` 中的 `runTask` 函数。
 
+### docker-compose 编排
+
+> 开发
+
+todo: 数据库
+
+docker-compose -f dev-docker-compose.yml up
+
+> 生产
+
+todo:还有问题，跑起来就知道了，可以解决
+
+docker-compose -f prod-docker-compose.yml up
+
+在根目录执行
+docker-compose -f bin/docker/dev-docker-compose.yml up --build --remove-orphans
