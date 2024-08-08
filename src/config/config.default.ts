@@ -19,19 +19,19 @@ export default (appInfo: MidwayAppInfo) => {
             hostname: process.env.IP || '127.0.0.1',
         },
         typeorm: {
-            // dataSource: {
-            //     default: {
-            //         type: 'mysql',
-            //         host: '',
-            //         port: 3306,
-            //         username: '',
-            //         password: 'password',
-            //         database: 'db_name',
-            //         synchronize: false,
-            //         // 或者扫描形式
-            //         entities: ['**/model/**/*.entity{.ts,.js}'],
-            //     },
-            // },
+            dataSource: {
+                default: {
+                    type: 'mysql',
+                    host: 'gz-cdb-2hrot0ff.sql.tencentcdb.com',
+                    port: 29554,
+                    username: 'root',
+                    password: 'df@123456',
+                    database: 'db_crontask',
+                    synchronize: true,
+                    // 或者扫描形式
+                    entities: ['**/model/**/*{.ts,.js}'],
+                },
+            }
         },
         view: {
             //默认view目录

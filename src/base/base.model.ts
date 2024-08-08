@@ -5,6 +5,7 @@ import {
     FindOptionsSelect,
     FindOptionsOrder,
     FindOptionsRelations,
+    QueryRunner,
 } from 'typeorm';
 //import { ICommonReturn } from '../interface/common/index';
 import BaseEntity from '@fefeding/common/dist/models/base/baseORM';
@@ -30,7 +31,10 @@ export abstract class BaseModel<K extends BaseEntity> extends BaseService {
      * 保存
      * @param u 对象orm
      */
-    async save(entity: K) {
+    async save(entity: K, qryRunner?: QueryRunner) {
+        if(qryRunner) {
+            return await qryRunner.manager.save(entity);
+        }
         const res = await this.model.save(entity);
         return res;
     }

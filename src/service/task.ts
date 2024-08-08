@@ -1,4 +1,4 @@
-import { Provide, Inject } from '@midwayjs/core';
+import { Provide, Scope, ScopeEnum } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import * as moment from 'moment';
 import { BaseModel } from '../base/base.model';
@@ -12,10 +12,19 @@ const parser = require('@hardik_sharma/cron-parser-all');
  * 任务
  */
 @Provide()
+@Scope(ScopeEnum.Request, { allowDowngrade: true })
 export default class TaskService extends BaseModel<TaskConfig> {
 
     @InjectEntityModel(TaskConfig)
     protected model: Repository<TaskConfig>;
+
+    // 通过ID获取
+    async getById(id: number) {
+        const task = await this.model.findOneBy({
+            id
+        });
+        return task;
+    }
 
     /**
      * 从当前可以执行的任务中，获取一条。去执行
@@ -179,14 +188,5 @@ export default class TaskService extends BaseModel<TaskConfig> {
             console.log(e);
             this.ctx.log.error('checkTaskRunTime error:',e)
         }
-    }    
-
-    // 等待一定时间
-    async sleep(time: number = 10) {
-        return new Promise<void>((resolve, reject) => {
-            setTimeout(()=>{
-                resolve();
-            }, time);
-        });
-    }
+    }   
 }

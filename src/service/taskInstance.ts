@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { Provide, Inject } from '@midwayjs/core';
+import { Provide, Inject, Scope, ScopeEnum } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { QueryRunner, Repository } from 'typeorm';
 import * as stream from 'stream';
@@ -16,6 +16,8 @@ import TaskService from './task';
 /**
  * 任务
  */
+@Provide()
+@Scope(ScopeEnum.Request, { allowDowngrade: true })
 export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
 
     @InjectEntityModel(TaskInstanceOrm)
@@ -33,8 +35,7 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         instance.creator = instance.updater = master || user; // 如果执行人为 system 表示自动执行的，否则是手工执行的
 
         // 创建实例
-
-        console.log('create task instance ', task.id);
+        console.log('create task instance ', task);
 
         instance.createTime = instance.modifyTime = new Date();
 
@@ -99,7 +100,7 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
 
         try {
 
-            const task = await this.ctx.service.task.get(instance.taskId, db);
+            const task = await this.taskService.getById(instance.taskId);
             if(!task) {
                 throw Error(`任务配置${instance.taskId}不存在`);
             }

@@ -1,27 +1,26 @@
-
-import { Context } from 'egg';
-import { BaseTypeService } from './base';
-
+import { Provide, Scope, ScopeEnum } from '@midwayjs/core';
+import { InjectEntityModel } from '@midwayjs/typeorm';
+import { Repository, QueryRunner } from 'typeorm';
+import { BaseModel } from '../base/base.model';
 import TaskLockOrm from '../model/taskLock';
 import { TaskLockKeys } from '../model/taskConst';
 
 /**
  * 任务锁
  */
-export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
-    constructor(ctx: Context) {
-        super(ctx, TaskLockOrm);
-    }
+@Provide()
+@Scope(ScopeEnum.Singleton)
+export default class TaskLockService extends BaseModel<TaskLockOrm> {
 
+    @InjectEntityModel(TaskLockOrm)
+    protected model: Repository<TaskLockOrm>;
 
 
     /** 在指定锁中执行事务 */
-    async runLock(lockKey: TaskLockKeys, fun: Function) {
-        let dbName = 'db_crontask';
-        if(!this.getDBOptions(dbName)) dbName = this.dbName;
-        console.log('lock', dbName);
+    async runLock(lockKey: TaskLockKeys, fun: Function, qryRunner?: QueryRunner) {
+        console.log('lock', lockKey);
 
-        const qryRunner = (await this.getConnection(dbName)).createQueryRunner();
+        qryRunner = qryRunner || this.model.createQueryBuilder().connection.createQueryRunner();// ReplicationMode = "master" | "slave";
 
         try {
             //console.log(lockKey, ' 等待锁');
@@ -29,7 +28,7 @@ export default class TaskLockService extends BaseTypeService<TaskLockOrm> {
             // 开启事务
             await qryRunner.startTransaction();            
 
-            const queryBuilder = (await this.getRespository<TaskLockOrm>(this.dbName, TaskLockOrm)).createQueryBuilder('taskLock', qryRunner);
+            const queryBuilder = this.model.createQueryBuilder('taskLock', qryRunner);
 
             // 锁定和等待锁
             const qry = await queryBuilder.where('taskLock.key=:key', {

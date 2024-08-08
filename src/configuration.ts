@@ -3,8 +3,8 @@ import * as koa from '@midwayjs/koa';
 import * as validate from '@midwayjs/validate';
 import * as info from '@midwayjs/info';
 import * as axios from '@midwayjs/axios';
-import * as swagger from '@midwayjs/swagger';
-//import * as orm from '@midwayjs/typeorm';
+//import * as swagger from '@midwayjs/swagger';
+import * as orm from '@midwayjs/typeorm';
 import { join } from 'path';
 // import { DefaultErrorFilter } from './filter/default.filter';
 // import { NotFoundFilter } from './filter/notfound.filter';
@@ -28,8 +28,8 @@ import { AuthGuard } from './guard/auth';
         view,
         staticFile,
         axios,
-        //orm,
-        swagger,
+        orm,
+        //swagger,
     ],
     importConfigs: [join(__dirname, './config')],
 })
