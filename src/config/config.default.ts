@@ -1,4 +1,4 @@
-import { MidwayConfig, MidwayAppInfo } from '@midwayjs/core';
+import type { MidwayConfig, MidwayAppInfo } from '@midwayjs/core';
 import * as path from 'path';
 import devopsConfig from './devops.config';
 export default (appInfo: MidwayAppInfo) => {

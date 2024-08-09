@@ -32,6 +32,9 @@ export abstract class BaseModel<K extends BaseEntity> extends BaseService {
      * @param u 对象orm
      */
     async save(entity: K, qryRunner?: QueryRunner) {
+        if(this.ctx?.currentSession?.loginId) {
+            entity.updater = this.ctx.currentSession.loginId;
+        }
         if(qryRunner) {
             return await qryRunner.manager.save(entity);
         }

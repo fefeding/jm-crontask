@@ -26,6 +26,47 @@ export default class TaskService extends BaseModel<TaskConfig> {
         return task;
     }
 
+    // 检索
+    async query(params: any) {
+        
+        const strWhere = ['1=1'];
+        const whereParams = {} as any;
+        if(params.name) {
+            strWhere.push('and TaskConfig.name like :name');
+            whereParams['name'] = `%${params.name}%`;
+        }
+        if(params.timeSize) {
+            strWhere.push('and TaskConfig.timeSize = :timeSize');
+            whereParams['timeSize'] = params.timeSize;
+        }
+        if(params.state > 0) {
+            strWhere.push('and TaskConfig.state = :state');
+            whereParams['state'] = params.state;
+        }
+        if(params.id > 0) {
+            strWhere.push('and TaskConfig.id = :id');
+            whereParams['id'] = params.id;
+        }
+
+        params.size = Math.min(params.size || 20, 100);
+        const skip = ((params.page || 1) - 1) * params.size || 0;
+
+        const qry = this.model.createQueryBuilder('TaskConfig')
+                    .where(strWhere.join(' '), whereParams)
+                    .addOrderBy('TaskConfig.state', 'ASC').addOrderBy('TaskConfig.lastRunTime', 'DESC')
+                    .skip(skip).take(params.size);
+
+        //console.log(qry.getSql());
+        const [data , count] = await qry.getManyAndCount();
+
+        const rsp = {
+            data,
+            total: count
+        };
+
+        return rsp;
+    }
+
     /**
      * 从当前可以执行的任务中，获取一条。去执行
      */

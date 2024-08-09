@@ -27,7 +27,7 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
     taskService : TaskService;
 
     // 通过任务配置创建实例
-    async createTaskInstance(task: TaskConfigOrm, qryRunner: QueryRunner, master: string = '') {
+    async createTaskInstance(task: TaskConfigOrm, qryRunner?: QueryRunner, master: string = '') {
         const instance = new TaskInstanceOrm();
         instance.taskId = task.id;
 
@@ -38,6 +38,8 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         console.log('create task instance ', task);
 
         instance.createTime = instance.modifyTime = new Date();
+
+        if(!qryRunner) qryRunner = this.model.manager.queryRunner || this.model.manager.connection.createQueryRunner();
 
         return await qryRunner.connection.getRepository(TaskInstanceOrm).save(instance);
     }
@@ -134,6 +136,74 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
 
         return await this.save(instance); // 保存日志
     }
+
+    // 通过ID获取
+    async getById(id: number) {
+        const task = await this.model.findOneBy({
+            id
+        });
+        return task;
+    }
+
+     /**
+     * 查询任务运行记录
+     */
+     async query(params: {
+         taskId?: number,
+         status?: TaskStatus,
+         execStartTime?: string,
+         execEndTime?: string,
+         size: number,
+         page: number,
+     }): Promise<any> {
+ 
+         const strWhere = ['Task.id is not null'];
+         const whereParams = {} as any;
+         if(params.taskId) {
+             strWhere.push('and TaskInstance.taskId=:taskId');
+             whereParams['taskId'] = params.taskId;
+         }
+         if(params.status > 0) {
+             strWhere.push('and TaskInstance.status = :status');
+             whereParams['status'] = params.status;
+         }
+         if(params.execStartTime) {
+             strWhere.push('and TaskInstance.execStartTime >= :execStartTime');
+             whereParams['execStartTime'] = params.execStartTime;
+         }
+         if(params.execEndTime) {
+             strWhere.push('and TaskInstance.execStartTime <= :execEndTime');
+             whereParams['execEndTime'] = params.execEndTime;
+         }
+ 
+         params.size = Math.min(params.size || 20, 100);
+         const skip = ((params.page || 1) - 1) * params.size || 0;
+ 
+         console.log(params.size, skip);
+ 
+         const qry = this.model.createQueryBuilder('TaskInstance')
+                     .leftJoinAndSelect(TaskConfigOrm, 'Task', 'Task.id=TaskInstance.taskId')
+                     .select('TaskInstance.id', 'id')
+                     .addSelect('TaskInstance.taskId','taskId')
+                     .addSelect('TaskInstance.execServer','execServer')
+                     .addSelect('TaskInstance.execStartTime','execStartTime')
+                     .addSelect('TaskInstance.execEndTime','execEndTime')
+                     .addSelect('TaskInstance.status','status')
+                     .addSelect('Task.name','taskName')
+                     .addSelect('TaskInstance.creator','creator')
+                     .addSelect('TaskInstance.updater','updater')
+                     .addSelect('TaskInstance.createTime','createTime')
+                     .addSelect('TaskInstance.modifyTime','modifyTime')
+                     .where(strWhere.join(' '), whereParams)
+                     .addOrderBy('TaskInstance.execStartTime', 'DESC')
+                     .addOrderBy('TaskInstance.status', 'ASC');
+ 
+         //console.log(qry.getSql());
+         //const count = await qry.getCount();
+         const data = await qry.limit(params.size).offset(skip).getRawMany();
+ 
+         return data;
+     }
 
     /**
      * 修改实例状态
