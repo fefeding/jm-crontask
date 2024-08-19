@@ -47,6 +47,11 @@ const router = createRouter({
                             name: 'list',
                             component: () => import('../views/admin/task/list.vue'),
                         },
+                        {
+                            path: 'edit',
+                            name: 'edit',
+                            component: () => import('../views/admin/task/edit.vue'),
+                        },
                     ]
                 },
             ],

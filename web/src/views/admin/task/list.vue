@@ -48,14 +48,14 @@
         <el-table-column
           prop="timeSize"
           label="执行方式">
-          <template slot-scope="props">
-            {{ getTimeTypeName(props.row) }}
+          <template #default="scope">
+            {{ getTimeTypeName(scope.row) }}
           </template>
         </el-table-column>
         <el-table-column
             label="最近修改人"
             width="100">
-            <template slot-scope="scope">
+            <template #default="scope">
                 <StaffUserName
         style="max-height: 30px;" :staffId="scope.row.updater" domain=""></StaffUserName>
               </template>
@@ -68,22 +68,22 @@
           prop="state"
           label="状态"
           width="100">
-          <template slot-scope="props">
-            {{ getTaskStateName(props.row.state)}}
+          <template #default="scope">
+            {{ getTaskStateName(scope.row.state)}}
           </template>
         </el-table-column>
         <el-table-column
           label="操作"
           width="250">
-          <template slot-scope="props">
-            <el-button type="success" size="small" v-if="props.row.state == 0 || props.row.state == 2 || props.row.state == 3" @click="setState(props.row.id, 1, '启用')">启用</el-button>
-            <el-button type="warning" size="small" v-if="props.row.state == 1" @click="setState(props.row.id, 2, '停用')">停用</el-button>
-            <el-button type="warning" size="small" v-if="props.row.state == 1" @click="runTask(props.row.id)">立即执行</el-button>
-            <router-link :to="'/task/edit?id=' + props.row.id" tag="span">
+          <template #default="scope">
+            <el-button type="success" size="small" v-if="scope.row.state == 0 || scope.row.state == 2 || scope.row.state == 3" @click="setState(scope.row.id, 1, '启用')">启用</el-button>
+            <el-button type="warning" size="small" v-if="scope.row.state == 1" @click="setState(scope.row.id, 2, '停用')">停用</el-button>
+            <el-button type="warning" size="small" v-if="scope.row.state == 1" @click="runTask(scope.row.id)">立即执行</el-button>
+            <router-link :to="'/task/edit?id=' + scope.row.id" tag="span">
               <el-button type="primary" size="small">修改</el-button>
             </router-link>
-            <el-button type="danger" size="small" icon="delete" v-if="props.row.state != 3" @click="setState(props.row.id, 3, '移除')">移除</el-button>
-            <el-button type="info" size="small" @click="$router.push('/task/instance?taskId=' + props.row.id)">查看执行情况</el-button>
+            <el-button type="danger" size="small" icon="delete" v-if="scope.row.state != 3" @click="setState(scope.row.id, 3, '移除')">移除</el-button>
+            <el-button type="info" size="small" @click="$router.push('/task/instance?taskId=' + scope.row.id)">查看执行情况</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -105,9 +105,7 @@ import { computed, onMounted, ref } from 'vue';
 import { ElMessageBox ,ElMessage } from 'element-plus';
 import {TaskState, TaskTimeSize} from '../../../base/taskConst';
 import { request } from '../../../service/base';
-import StaffUserName from './staffUserName.vue'
-
-//import editTask from './edit';
+import StaffUserName from './staffUserName.vue';
 
     const taskQueryRequest = ref({
         name: "",
@@ -141,8 +139,9 @@ import StaffUserName from './staffUserName.vue'
 
     // 查询任务配置
     async function query() {
-        const data = await request('/api/task/query', taskQueryRequest.value);
-        taskQueryResponse.value = data;
+        const res = await request('/api/task/query', taskQueryRequest.value);
+        console.log(res);
+        if(res.ret === 0) taskQueryResponse.value = res.data;
     }
 
     // 设置状态

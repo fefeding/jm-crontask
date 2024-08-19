@@ -25,6 +25,8 @@ export class RunnerService extends BaseService {
     @Init()
     async init() {
         this.master();// 启动主任务
+
+        this.subTask();// 启动子任务
     }
 
     runningTaskCount = 0;// 当前正在跑的task个数
