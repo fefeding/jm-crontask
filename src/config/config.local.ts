@@ -16,19 +16,6 @@ export default () => {
             hostname: process.env.IP || '127.0.0.1',
         },
         typeorm: {
-            // dataSource: {
-            //     default: {
-            //         type: 'mysql',
-            //         host: 'server.jm47.com',
-            //         port: 3306,
-            //         username: 'fefeding',
-            //         password: 'df@123456',
-            //         database: 'db_school',
-            //         synchronize: true,
-            //         // 或者扫描形式
-            //         entities: ['**/model/**/*{.ts,.js}'],
-            //     },
-            // },
         },
         staticFile: {
             dirs: {

@@ -99,5 +99,5 @@
 </template>
 <style>
 </style>
-<script lang="ts" src="./list.ts">
+<script setup lang="ts" src="./list.ts">
 </script>
