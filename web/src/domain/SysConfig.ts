@@ -1,5 +1,4 @@
 import Entity from '../base/entity';
-import { merge } from 'lodash-es';
 /**
  *  系统配置Domain
  */
@@ -20,6 +19,7 @@ export interface SysConfigState {
         adapter?: string;
     };
     user?: UserInfo;
+    session?: any;
     jvCommon?: {
         env?: string;
         defaultHost?: string;
@@ -39,10 +39,11 @@ export interface SysConfigState {
         };
     };
     jvSessionToken?: string;
+    isManager: boolean;
 }
 
 export default class SysConfig extends Entity<SysConfigState> {
-    constructor(state?: SysConfigState) {
+    constructor(state?: any) {
         super(state);
     }
 
@@ -59,10 +60,16 @@ export default class SysConfig extends Entity<SysConfigState> {
         return this.state?.config;
     }
     get user() {
-        return this.state.user;
+        return this.state.session?.user;
+    }
+    get session() {
+        return this.state.session;
     }
     get jvCommon() {
         return this.state.jvCommon || {};
     }
+    get isManager() {
+        return this.state.isManager;
+    }
 }
-export const sysConfig = new SysConfig(merge({}, window.__INITIAL_STATE__));
+export const sysConfig = new SysConfig(Object.assign({}, window.__INITIAL_STATE__));

@@ -28,7 +28,7 @@ export default () => {
         },
         //基础服务
         baseService: {
-            url: 'http://127.0.0.1:7002/base-server'
+            //url: 'http://127.0.0.1:7002/base-server'
         },
     };
 };

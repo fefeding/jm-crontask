@@ -2,5 +2,5 @@ const PREFIX = '';
 export default {
     prefix: PREFIX,
     prefixUrl: PREFIX ? `/${PREFIX}` : '',
-    siteTitle: 'j系统',
+    siteTitle: '定时任务系统',
 };

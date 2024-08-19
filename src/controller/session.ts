@@ -1,4 +1,4 @@
-import { Inject, Controller, All, Provide, Body, Config } from '@midwayjs/core';
+import { Inject, Controller, All, Provide, Body, } from '@midwayjs/core';
 import { BaseController } from '../base/base.controller';
 import { SessionService } from '../service/session';
 //import { checkApiToken } from '../lib/decorator';
@@ -8,9 +8,6 @@ import { SessionService } from '../service/session';
 export class SessionController extends BaseController {
     @Inject()
     sessionService: SessionService;
-    // 登陆态验证配置
-    @Config('defaultPage')
-    defaultPage: string;
 
     // 接口需要验证token
     @All('/loginByWx')
@@ -20,8 +17,7 @@ export class SessionController extends BaseController {
         if(res.ret === 0 && res.data) {
             this.ctx.cookies.set('token', res.data.id);// 写入cookie
             return {
-                ...res.data,                
-                defaultPage: this.defaultPage,
+                ...res.data,  
             }
         }
         return res;
@@ -34,8 +30,7 @@ export class SessionController extends BaseController {
         if(res.ret === 0 && res.data) {
             this.ctx.cookies.set('token', res.data.id);// 写入cookie
             return {
-                ...res.data,                
-                defaultPage: this.defaultPage,
+                ...res.data,       
             }
         }
         return res;

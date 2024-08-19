@@ -7,7 +7,7 @@
     {% if env.NODE_ENV == 'local' %}
       {% include "./modules/admin_footer.tpl" %}
     {% else %}
-      <script type="module" lang="ts" src="/src/platform/admin/index.ts">      
+      <script type="module" lang="ts" src="/src/admin.ts">      
       </script>
     {% endif %}
   </body>
