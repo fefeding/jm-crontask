@@ -15,7 +15,7 @@ export default (appInfo: MidwayAppInfo) => {
         koa: {
             // 全局路由前缀
             globalPrefix: `${devopsConfig.prefixUrl}`,
-            port: Number(process.env.PORT) || 7001,
+            port: Number(process.env.PORT) || 8092,
             hostname: process.env.IP || '127.0.0.1',
         },
         typeorm: {
