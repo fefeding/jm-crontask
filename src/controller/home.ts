@@ -28,21 +28,22 @@ export class HomeController {
         return this.getDefaultTemplate('admin.html');
     }
 
-    @Get('/admin/*')
+    @Get('/*')
+    @Get('/')
     @checkLogin(true)// 需要登陆态的接口
     async admin(): Promise<string> {
         return this.getDefaultTemplate('admin.html');
     }
 
-    @Get('/*')
-    async home(): Promise<string> {
-        return this.getDefaultTemplate('index.html');
-    }
+    // @Get('/*')
+    // async home(): Promise<string> {
+    //     return this.getDefaultTemplate('index.html');
+    // }
 
-    @Get('/')
-    async defaultToHome() {
-        return this.getDefaultTemplate('index.html');
-    }
+    // @Get('/')
+    // async defaultToHome() {
+    //     return this.getDefaultTemplate('index.html');
+    // }
 
     /**
      * render模板
