@@ -52,6 +52,9 @@ export class TaskInstanceController extends BaseController {
         id: number,
         status: TaskStatus
     }): Promise<any> {
+        if(!this.taskInstanceService.checkManager()) {
+            throw Error('没有权限');
+        }
         return await this.taskInstanceService.updateStatus(params.id, params.status);
     }
 }

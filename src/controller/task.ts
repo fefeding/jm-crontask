@@ -32,7 +32,9 @@ export class TaskController extends BaseController {
     @decorators.checkLogin(true)
     @All('/save')
     public async save(@Body() data: any) {
-
+        if(!this.taskService.checkManager()) {
+            throw Error('没有权限');
+        }
         const fields = {} as any;
         if(data.name) {
             fields['name'] = data.name;
@@ -77,7 +79,9 @@ export class TaskController extends BaseController {
         id: number,
         state: TaskState
     }) {        
-
+        if(!this.taskService.checkManager()) {
+            throw Error('没有权限');
+        }
         if(data.id > 0) {
             const task = await this.taskService.getById(data.id);
             if(!task) {
@@ -104,7 +108,9 @@ export class TaskController extends BaseController {
     public async run(@Body() data: {
         id: number
     }) {       
-
+        if(!this.taskService.checkManager()) {
+            throw Error('没有权限');
+        }
         if(!data.id) {
             throw new Error('请指定任务');
         }
