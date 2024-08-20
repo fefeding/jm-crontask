@@ -23,7 +23,7 @@
     "axios": "^1.7.2",
     "dayjs": "^1.11.11",
     "ip": "^2.0.1",
-    "jm-jsruntime": "^1.0.3",
+    "jm-jsruntime": "^1.0.4",
     "moment": "^2.30.1",
     "mysql2": "^3.10.0",
     "swagger-ui-dist": "^5.0.0",
