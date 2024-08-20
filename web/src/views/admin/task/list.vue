@@ -28,7 +28,7 @@
             </el-form-item>
             <el-form-item>
               <el-button class="search-button" type="primary" @click="()=>{taskQueryRequest.page=1;query()}">查询</el-button>
-              <el-button class="add-button" type="success" @click="$router.push('/task/edit?id=0')">创建任务</el-button>
+              <el-button class="add-button" type="success" @click="router.push({name: 'task_edit'})">创建任务</el-button>
             </el-form-item>
         </el-form>
         </el-row>
@@ -57,7 +57,7 @@
             width="100">
             <template #default="scope">
                 <StaffUserName
-        style="max-height: 30px;" :staffId="scope.row.updater" domain=""></StaffUserName>
+        style="max-height: 30px;" :id="scope.row.updater" domain=""></StaffUserName>
               </template>
         </el-table-column>
         <el-table-column
@@ -79,7 +79,7 @@
             <el-button type="success" size="small" v-if="scope.row.state == 0 || scope.row.state == 2 || scope.row.state == 3" @click="setState(scope.row.id, 1, '启用')">启用</el-button>
             <el-button type="warning" size="small" v-if="scope.row.state == 1" @click="setState(scope.row.id, 2, '停用')">停用</el-button>
             <el-button type="warning" size="small" v-if="scope.row.state == 1" @click="runTask(scope.row.id)">立即执行</el-button>
-            <router-link :to="'/task/edit?id=' + scope.row.id" tag="span">
+            <router-link :to="{name:'task_edit', query: {id: scope.row.id}}" tag="span">
               <el-button type="primary" size="small">修改</el-button>
             </router-link>
             <el-button type="danger" size="small" icon="delete" v-if="scope.row.state != 3" @click="setState(scope.row.id, 3, '移除')">移除</el-button>
@@ -102,10 +102,13 @@
 </style>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import { useRouter, } from 'vue-router';
 import { ElMessageBox ,ElMessage } from 'element-plus';
 import {TaskState, TaskTimeSize} from '../../../base/taskConst';
 import { request } from '../../../service/base';
 import StaffUserName from './staffUserName.vue';
+
+    const router = useRouter();
 
     const taskQueryRequest = ref({
         name: "",

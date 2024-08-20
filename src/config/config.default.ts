@@ -27,7 +27,8 @@ export default (appInfo: MidwayAppInfo) => {
                     username: 'root',
                     password: 'df@123456',
                     database: 'db_crontask',
-                    synchronize: true,
+                    synchronize: false,
+                    logging: false,
                     // 或者扫描形式
                     entities: ['**/model/**/*{.ts,.js}'],
                 },

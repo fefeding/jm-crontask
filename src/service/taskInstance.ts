@@ -68,7 +68,7 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         const vconsole = {
             write: (type, msgs)=>{
                 try {
-                    console.info(type, msgs);
+                    //console.info(type, msgs);
                     msgs = msgs || [];
                     const log =  `[${type}][${instance.id}] ${msgs.map((v)=>typeof v ==='object'? JSON.stringify(v):v).join('\n')}\n`;
 

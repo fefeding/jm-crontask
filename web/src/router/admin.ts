@@ -44,12 +44,12 @@ const router = createRouter({
                     children: [
                         {
                             path: 'list',
-                            name: 'list',
+                            name: 'task_list',
                             component: () => import('../views/admin/task/list.vue'),
                         },
                         {
                             path: 'edit',
-                            name: 'edit',
+                            name: 'task_edit',
                             component: () => import('../views/admin/task/edit.vue'),
                         },
                     ]

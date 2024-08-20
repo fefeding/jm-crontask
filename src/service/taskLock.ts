@@ -18,7 +18,7 @@ export default class TaskLockService extends BaseModel<TaskLockOrm> {
 
     /** 在指定锁中执行事务 */
     async runLock(lockKey: TaskLockKeys, fun: Function, qryRunner?: QueryRunner) {
-        console.log('lock', lockKey);
+        //console.log('lock', lockKey);
 
         qryRunner = qryRunner || this.model.createQueryBuilder().connection.createQueryRunner();// ReplicationMode = "master" | "slave";
 

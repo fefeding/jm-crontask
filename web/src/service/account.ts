@@ -4,15 +4,30 @@ import { request } from './base';
 import type Account from '@fefeding/common/dist/models/account/account';
 import type User from '@fefeding/common/dist/models/account/user';
 
+const userNameCache = {} as any;// 用户名缓存
+
 // 查询
 export async function queryUser(queryInfo: any) {
     const res = await request<PageResponse<Account>>('/api/account/queryUser', queryInfo);
     return res;
 }
 
-export async function queryUserName(queryInfo: any) {
-    const res = await request('/api/account/queryUserName', queryInfo);
-    return res;
+export async function queryUserName(queryInfo: {
+        id?: number,
+        loginId?: number
+    }) {
+
+    let key = '';
+    if(queryInfo.id) key = 'user_' + queryInfo.id;
+    else if(queryInfo.loginId) key = 'account_ ' + queryInfo.loginId;
+
+    if(!key) return null;
+
+    if(userNameCache[key]) return userNameCache[key];
+    userNameCache[key] = request('/api/account/queryUserName', {
+        query: queryInfo
+    });
+    return userNameCache[key];
 }
 
 // 新增
