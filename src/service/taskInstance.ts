@@ -113,11 +113,12 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
             const options = {
                 params: {
                     "console": vconsole,
-                    "task": task,
                     "require": () => {
                         throw Error('不支持require');
                     },
+                    'process': null,
                     'this': null,
+                    "task": task,
                     "modules": {
                         moment,
                         path,
