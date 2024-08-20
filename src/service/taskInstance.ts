@@ -2,9 +2,9 @@ import * as moment from 'moment';
 import { Provide, Inject, Scope, ScopeEnum } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { QueryRunner, Repository } from 'typeorm';
-import * as stream from 'stream';
-import * as fs from 'fs';
+import * as path from 'path';
 import * as jsruntime from 'jm-jsruntime';
+import axios from 'axios';
 import { BaseModel } from '../base/base.model';
 
 import TaskConfigOrm from '../model/taskConfig';
@@ -114,9 +114,15 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
                 params: {
                     "console": vconsole,
                     "task": task,
-                    moment,
-                    stream,
-                    fs,
+                    "require": () => {
+                        throw Error('不支持require');
+                    },
+                    'this': null,
+                    "modules": {
+                        moment,
+                        path,
+                        axios,
+                    }
                 }
             }
             vconsole.info(task.name);
