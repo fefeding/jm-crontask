@@ -1,13 +1,14 @@
 <template>
-  <div
+  <el-aside
     class="aside-container pt-9 flex flex-col h-screen"
     :class="{ 'collapse-wrap': collapse }"
   >
     <div class="logo-container flex pl-6 pr-6">
-      <img src="@/assets/logo.webp" class="w-7 mr-2" alt="" />
+      <!--<img src="@/assets/logo.png" class="w-7 mr-2" alt="" />-->
+      <School  class="w-7 mr-2" color="#409efc" />
       <span class="logo-container--title">{{ title }}</span>
     </div>
-    <div class="flex-1 pt-20">
+    <div class="flex-1 pt-10">
       <!-- 菜单 -->
       <el-menu
         :default-active="$route.path"
@@ -20,20 +21,21 @@
         <div v-for="(menu, _index) in navMenus" :key="_index">
           <el-sub-menu v-if="menu.children" :index="menu.path || menu.index">
             <template #title>
-              <img width="33" :src="menu.icon" alt="" />
+              <el-icon><component v-bind:is="getMenuIcon(menu.icon)" /></el-icon>
               <span>{{ menu.name }}</span>
             </template>
             <el-menu-item
               v-for="subMenu in menu.children"
               :key="subMenu.key"
-              :index="subMenu.path"
+              :index="subMenu.path" 
+              :disabled="subMenu.disabled === false"
             >
               <span>{{ subMenu.name }}</span>
             </el-menu-item>
           </el-sub-menu>
-          <el-menu-item :index="menu.path" v-else>
-            <img width="33" :src="menu.icon" />
+          <el-menu-item :index="menu.path" :disabled="menu.disabled===false" v-else>
             <template #title>
+              <el-icon><component v-bind:is="getMenuIcon(menu.icon)" /></el-icon>
               <span class="ml-4">{{ menu.name }}</span>
             </template>
           </el-menu-item>
@@ -44,7 +46,8 @@
       <div class="user-box flex items-center">
         <el-popover :teleported="false" placement="right" trigger="click">
           <template #reference>
-            <img :src="userAvatar" class="w-6" alt="" />
+            <img v-if="userAvatar" :src="userAvatar" class="w-6" alt="" />
+            <img v-else src="@/assets/images/no-login.png" class="w-6" />
           </template>
           <el-button link @click="logout">退出登陆</el-button>
         </el-popover>
@@ -58,34 +61,29 @@
         @click="collapse = !collapse"
       />
     </div>
-  </div>
+  </el-aside>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
+import { computed, ref, type Component } from 'vue';
 import { sysConfig } from '@/domain/SysConfig';
+import config from '@/base/config';
 import { useRouter } from 'vue-router';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue';
+import defaultAvator from '@/assets/images/no-login.png';
 
-export default defineComponent({
+export default {
+  props: {
+    menus: Object,
+  },
   setup(props, ctx) {
-    const collapse = ref(true);
+    const collapse = ref(false);
     const router = useRouter();
 
-    const navMenus = ref<any>({
-      app: {
-        path: '/about',
-        icon: 'https://jtcospublic.ciccten.com/low-code/files/low-code-creator/file1695889943988.png',
-        name: '应用管理ß',
-      },
-      home: {
-        path: '/home',
-        icon: 'https://jtcospublic.ciccten.com/low-code/files/low-code-creator/file1695889943988.png',
-        name: '首页',
-      },
-    });
-
+    const navMenus = ref<any>(props.menus);
+    
     const userAvatar = computed(() => {
-      return sysConfig.user?.avatar || '@/assets/images/no-login.png';
+      return sysConfig.user?.avatar || defaultAvator;
     });
 
     const userName = computed(() => {
@@ -96,15 +94,15 @@ export default defineComponent({
       return sysConfig.title || '';
     });
 
+    const getMenuIcon = function(name: string = 'Menu') {
+      // @ts-ignore
+      return (ElementPlusIconsVue[name] || ElementPlusIconsVue.Menu) as Component;
+    }
+
     async function logout() {
-      let url = '/account/login/logout?jvAppId=';
-      const jvCommon = sysConfig.jvCommon;
-      if (jvCommon) {
-        url = jvCommon?.main?.logoutUrl || '';
-        url += '?jvAppId=' + jvCommon?.jvAppId;
-      }
+      const url = `${location.origin}${config.prefix}/admin/logout`;
       window.location.replace(
-        url + '&url=' + encodeURIComponent(location.href)
+        url
       );
     }
 
@@ -119,15 +117,17 @@ export default defineComponent({
       navMenus,
       logout,
       selectMenu,
+      getMenuIcon
     };
   },
-});
+};
 </script>
 
 <style scoped lang="scss">
 .aside-container {
   min-width: 260px;
   max-width: 260px;
+  height: 100vh;
   box-sizing: border-box;
   background: linear-gradient(343deg, #070709, #2f3137);
   &.collapse-wrap {

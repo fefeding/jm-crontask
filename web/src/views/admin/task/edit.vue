@@ -187,7 +187,8 @@ import { request } from '../../../service/base';
         taskData.value.script = taskScript.value || '';
         const rsp = await request('/api/task/save', taskData.value);
         if(rsp.ret === 0) {
-            ElMessage.success('保存成功');            
+            ElMessage.success('保存成功');   
+            query(rsp.data.id);         
         }
     }
 

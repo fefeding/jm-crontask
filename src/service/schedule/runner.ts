@@ -52,7 +52,7 @@ export class RunnerService extends BaseService {
             console.error(e);
         }
         finally {
-            await this.sleep(10000);// 每10秒跑一次
+            await this.sleep(2000);// 每2秒跑一次
 
             this.master();
         }

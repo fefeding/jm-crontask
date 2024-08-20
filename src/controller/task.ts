@@ -62,7 +62,8 @@ export class TaskController extends BaseController {
         else {
             fields['description'] = fields['description'] || '';
             fields['creator'] = fields['updater'];
-            const task = new TaskConfigOrm(fields);
+            const task = new TaskConfigOrm();
+            task.fromJSON(fields);
             const res = await this.taskService.insert(task);
             return res;
         }

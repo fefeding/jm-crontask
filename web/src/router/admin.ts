@@ -52,6 +52,16 @@ const router = createRouter({
                             name: 'task_edit',
                             component: () => import('../views/admin/task/edit.vue'),
                         },
+                        {
+                            path: 'instance',
+                            name: 'task_instance',
+                            component: () => import('../views/admin/task/instance.vue'),
+                        },
+                        {
+                            path: 'log',
+                            name: 'task_log',
+                            component: () => import('../views/admin/task/log.vue'),
+                        },
                     ]
                 },
             ],

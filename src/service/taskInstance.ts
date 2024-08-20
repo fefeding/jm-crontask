@@ -35,7 +35,7 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         instance.creator = instance.updater = master || user; // 如果执行人为 system 表示自动执行的，否则是手工执行的
 
         // 创建实例
-        console.log('create task instance ', task);
+        //console.log('create task instance ', task);
 
         instance.createTime = instance.modifyTime = new Date();
 
@@ -111,14 +111,23 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
             await this.taskService.save(task);
 
             const options = {
+                promise: true,
                 params: {
                     "console": vconsole,
                     "require": () => {
                         throw Error('不支持require');
                     },
                     'process': null,
-                    'this': null,
                     "task": task,
+                    // 等待一定时间
+                    "sleep": async (time: number = 10) => {
+                        //time = Math.min(time, 20000);// 最多支持等待时间
+                        return new Promise<void>((resolve, reject) => {
+                            setTimeout(()=>{
+                                resolve();
+                            }, time);
+                        });
+                    },
                     "modules": {
                         moment,
                         path,
@@ -126,9 +135,9 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
                     }
                 }
             }
-            vconsole.info(task.name);
+            vconsole.info('开始执行', task.name);
             const res = await jsruntime.runScript(task.script, options);
-            vconsole.info(res);
+            vconsole.info(res, '结束');
             instance.status = TaskStatus.success;
         }
         catch(e) {

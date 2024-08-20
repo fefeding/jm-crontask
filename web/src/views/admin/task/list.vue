@@ -83,7 +83,7 @@
               <el-button type="primary" size="small">修改</el-button>
             </router-link>
             <el-button type="danger" size="small" icon="delete" v-if="scope.row.state != 3" @click="setState(scope.row.id, 3, '移除')">移除</el-button>
-            <el-button type="info" size="small" @click="$router.push('/task/instance?taskId=' + scope.row.id)">查看执行情况</el-button>
+            <el-button type="info" size="small" @click="router.push({name: 'task_instance', query: {taskId: scope.row.id}})">查看执行情况</el-button>
           </template>
         </el-table-column>
       </el-table>

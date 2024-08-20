@@ -16,6 +16,7 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import Aside from './components/Aside.vue';
 import Content from './components/Content.vue';
+import menus from '../../base/menu';
 
 const router = useRouter();
 const isFullContent = computed(()=>{
