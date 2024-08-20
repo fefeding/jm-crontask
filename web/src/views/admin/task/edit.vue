@@ -93,7 +93,7 @@ import modeJsUrl from 'ace-builds/src-noconflict/mode-javascript?url';
 ace.config.setModuleUrl('ace/mode/javascript', modeJsUrl);
 import themeChromeUrl from 'ace-builds/src-noconflict/theme-chrome?url';
 ace.config.setModuleUrl('ace/theme/chrome', themeChromeUrl);
-
+// @ts-ignore
 import vue3Cron from 'no-vue3-cron';
 import 'no-vue3-cron/lib/noVue3Cron.css'; // 引入样式
 

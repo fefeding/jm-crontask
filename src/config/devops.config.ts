@@ -1,4 +1,4 @@
-const PREFIX = '';
+const PREFIX = 'crontask';
 export default {
     prefix: PREFIX,
     prefixUrl: PREFIX ? `/${PREFIX}` : '',
