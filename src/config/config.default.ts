@@ -88,7 +88,7 @@ export default (appInfo: MidwayAppInfo) => {
         baseService: {
             manager: 'admin',// 管理员帐号
             appId: 2,
-            url: 'https://api.jm47.com/base-server'
+            url: 'http://api.jm47.com/base-server'
         },
         bodyParser: {
             formLimit: '30mb',
