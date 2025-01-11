@@ -63,7 +63,8 @@
     "deploy": "npm install && npm run build && npm prune --production",
     "docker": "docker build . -t base-server",
     "start": "pm2 start bootstrap.js --name crontask-server --disable-logs",
-    "restart": "pm2 restart crontask-server --disable-logs"
+    "restart": "pm2 restart crontask-server --disable-logs",
+    "stop": "pm2 stop crontask-server"
   },
   "midway-bin-clean": [
     ".vscode/.tsbuildinfo",
