@@ -56,6 +56,31 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         return instance;
     }
 
+    // 终结所有超时的实例
+    async stopTimeoutTasks(qryRunner: QueryRunner) {
+        try {
+            const queryBuilder = this.model.createQueryBuilder('instance', qryRunner);
+            const qry = queryBuilder
+            // 关联是否有实例在执行或已创建，这个tick不重复创建，直接任务执行完成。
+            .leftJoin(TaskConfigOrm, 'taskConfig', `taskConfig.id=instance.taskId`)
+            .where(`instance.status=:status and taskConfig.Ftimeout > 0 and instance.execStartTime < DATE_FORMAT(DATE_SUB(NOW(), INTERVAL taskConfig.Ftimeout SECOND), '%Y-%m-%d %H:%i:%s')`, {
+                status: TaskStatus.running
+            });
+
+            const items = await qry.getMany();
+            if(items.length) {
+                for(const item of items) {
+                    item.status = TaskStatus.timeout;
+                    const res = await this.model.save(item);
+                    this.sendFaildMsg(res, '执行超时');
+                }
+            }
+        }
+        catch(e) {
+            console.error(e);
+        }
+    }
+
     /**
      * 执行单个任务
      * @param instance 实例

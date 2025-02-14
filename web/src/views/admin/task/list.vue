@@ -23,7 +23,7 @@
                   <el-option key="3"
                             label="已失效"
                             :value="3">
-                  </el-option>
+                </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -51,6 +51,10 @@
           <template #default="scope">
             {{ getTimeTypeName(scope.row) }}
           </template>
+        </el-table-column>
+        <el-table-column
+          prop="timeout"
+          label="超时设置(秒)">
         </el-table-column>
         <el-table-column
             label="最近修改人"

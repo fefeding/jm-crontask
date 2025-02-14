@@ -41,7 +41,9 @@ export enum TaskStatus {
     /** 运行成功 */
     success = 2,
     /** 执行失败 */
-    failed = 3
+    failed = 3,
+    /** 执行超时 */
+    timeout = 4
 }
 
 /** 任务锁 */

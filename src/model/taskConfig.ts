@@ -47,6 +47,14 @@ export default class TaskConfig extends BaseEntity {
     public timeSize: TaskTimeSize = TaskTimeSize.single;
 
     @Column({
+        name: 'Ftimeout',
+        type: 'int',
+        default: 1800,
+        comment: '超时时间，单位秒'
+    })
+    public timeout = 1800;
+
+    @Column({
         name: 'Fstate',
         type: 'smallint',
         default: TaskState.init,

@@ -45,6 +45,9 @@
                     <el-input-number v-else v-model="taskData.timeValue" :min="1" :max="100000" aria-label="执行隔间"></el-input-number>
                 </el-col>
             </el-form-item>
+            <el-form-item label="超时时间(秒)">
+                <el-input-number v-model="taskData.timeout" :min="0" :max="100000" placeholder="任务执行超时时间"></el-input-number>
+            </el-form-item>
             <el-form-item label="关注人">
                 <el-input v-model="taskData.watcher" maxlength="64" placeholder="输入关注员工ID,用|分隔" show-word-limit></el-input>
             </el-form-item>
@@ -118,6 +121,7 @@ import { request } from '../../../service/base';
         timeSize: TaskTimeSize.second,
         state: TaskState.init,
         timeValue: '',
+        timeout: 1800,
         watcher: ''
     });
     // 任务脚本

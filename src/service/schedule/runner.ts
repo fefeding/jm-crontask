@@ -38,8 +38,13 @@ export class RunnerService extends BaseService {
         //     const manager = await this.app.getApplicationContext().getAsync(TypeORMDataSourceManager) as any;
         //     const dataSource = manager.getDataSource(manager.getDefaultDataSourceName()) as DataSource;
         //     const queryInner = dataSource.createQueryRunner();
+            
+
             // 在锁的事务中执行
             await this.taskLockService.runLock(TaskLockKeys.master, async (queryInner: QueryRunner) => {
+                // 先停掉超时的任务
+                await this.instanceService.stopTimeoutTasks(queryInner);
+
                 // 先获取可以执行的任务
                 const tasks = await this.taskService.getCurrentTimeNeedRunTasks(queryInner);
                 // 生成执行实例

@@ -48,6 +48,9 @@ export class TaskController extends BaseController {
         if(data.timeValue) {
             fields['timeValue'] = data.timeValue;
         }
+        if(data.timeout) {
+            fields['timeout'] = data.timeout;
+        }
         if(data.script) {
             fields['script'] = data.script;
         } 

@@ -23,6 +23,10 @@
                             label="失败"
                             :value="3">
                   </el-option>
+                  <el-option key="4"
+                            label="超时"
+                            :value="4">
+                  </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -163,6 +167,9 @@ import StaffUserName from './staffUserName.vue';
             }
             case TaskStatus.failed: {
                 return `失败`;
+            }
+            case TaskStatus.timeout: {
+                return `超时`;
             }
         }
         return '';
