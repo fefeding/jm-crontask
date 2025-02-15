@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import { BaseModel } from '../base/base.model';
 import { TaskConfig } from '../model/taskConfig';
 import { TaskInstance } from '../model/taskInstance';
-import { TaskState, TaskTimeSize } from '../model/taskConst';
+import { TaskState, TaskStatus, TaskTimeSize } from '../model/taskConst';
 import { QueryRunner, Repository } from 'typeorm';
 const parser = require('@hardik_sharma/cron-parser-all');
 
@@ -79,7 +79,7 @@ export default class TaskService extends BaseModel<TaskConfig> {
             // 上一秒处理过的先不处理
             const taskQry = queryBuilder
                 // 关联是否有实例在执行或已创建，这个tick不重复创建，直接任务执行完成。
-                .leftJoin(TaskInstance, 'taskInstance', `taskInstance.taskId=task.id and taskInstance.Fvalid=1 and taskInstance.status in (${TaskState.disabled},${TaskState.start})`)
+                .leftJoin(TaskInstance, 'taskInstance', `taskInstance.taskId=task.id and taskInstance.Fvalid=1 and taskInstance.status in (${TaskStatus.init},${TaskStatus.running})`)
                 .where("taskInstance.id is null and task.state=:state and task.Fvalid=1", {state: TaskState.start});
 
             //const sql = taskQry.getSql();
