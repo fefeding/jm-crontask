@@ -22,8 +22,8 @@ export default (appInfo: MidwayAppInfo) => {
             dataSource: {
                 default: {
                     type: 'mysql',
-                    host: 'gz-cdb-2hrot0ff.sql.tencentcdb.com',
-                    port: 29554,
+                    host: '172.16.16.16',
+                    port: 3306,
                     username: 'root',
                     password: 'df@123456',
                     database: 'db_crontask',
