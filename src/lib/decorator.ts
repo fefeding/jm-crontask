@@ -24,12 +24,18 @@ export function checkApiToken(need = true): MethodDecorator {
  * @param propertyKey 属性或方法名
  */
 export function getApiToken(target, propertyKey): any {
-    const value = getPropertyMetadata(
-        decorators.apiTokenMetadataKey,
-        target,
-        propertyKey
-    );
-    return value;
+    try {
+        const value = getPropertyMetadata(
+            decorators.apiTokenMetadataKey,
+            target,
+            propertyKey
+        );
+        return value;
+    }
+    catch(e) {
+        console.log(e);
+        return false;
+    }
 }
 
 /**

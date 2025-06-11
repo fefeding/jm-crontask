@@ -41,6 +41,9 @@ export class ApiResultFormatterMiddleware
                     }
                     ctx.logger.error(ctx.request.rawBody, ctx.body);
                 }
+                finally {                    
+                    ctx.status = 200;
+                }
             } else {
                 await next();
             }

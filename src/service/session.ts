@@ -1,10 +1,14 @@
-import { Provide, Scope, ScopeEnum } from '@midwayjs/core';
+import { Provide, Scope, ScopeEnum, InjectClient } from '@midwayjs/core';
+import { CachingFactory, MidwayCache } from '@midwayjs/cache-manager';
 import { BaseService } from '../base/base.service';
 import { Session, GetLoginSessionReq, GetLoginSessionRes, LogoutReq, LogoutRes, LoginByWxReq, LoginByWxRsp, LoginByAccountReq, LoginByAccountRsp } from '@fefeding/common/dist/models/account/session';
 
 @Provide()
 @Scope(ScopeEnum.Request, { allowDowngrade: true })
 export class SessionService extends BaseService { 
+
+    @InjectClient(CachingFactory, 'session')
+    sessionCache: MidwayCache;
 
     /**
      * 根据ID获取session
@@ -52,6 +56,20 @@ export class SessionService extends BaseService {
         const req = new LoginByAccountReq();
         req.fromJSON(loginParams);
         const res = await this.requestBaseApi<LoginByAccountRsp>(req);
+        return res;
+    }
+
+    /**
+     * 用临时码登陆
+     * @param code 登陆临时码
+     * @returns 
+     */
+    async loginByCode(code: string) {
+        const res = await this.requestBaseApi('/api/session/loginByAuthCode', {
+            data: {
+                code
+            }
+        });
         return res;
     }
 }

@@ -8,37 +8,11 @@ export interface SysConfigState {
     url?: string;
     config?: {
         prefix?: string;
-        permissionConfig?: {
-            open: boolean;
-            permissionSystemOrigin?: string;
-            roleIdWhiteList?: number[];
-            uniqueIdWhiteList?: string[];
-            requirePermissionPaths?: string[];
-            applyPermissionUrl?: string;
-        };
         adapter?: string;
     };
+    sso?: any;
     user?: UserInfo;
     session?: any;
-    jvCommon?: {
-        env?: string;
-        defaultHost?: string;
-        host?: string;
-        ignorePath?: any[];
-        ignoreHost?: string[];
-        jvAppId?: number;
-        main?: {
-            accessKey?: string;
-            loginUrl?: string;
-            logoutUrl?: string;
-            systemUrl?: string;
-        };
-        skipLoginCheck?: boolean;
-        servant?: {
-            objName?: string;
-        };
-    };
-    jvSessionToken?: string;
     isManager: boolean;
 }
 
@@ -56,6 +30,9 @@ export default class SysConfig extends Entity<SysConfigState> {
     get url() {
         return this.state?.url;
     }
+    get sso() {
+        return this.state?.sso;
+    }
     get config() {
         return this.state?.config;
     }
@@ -64,9 +41,6 @@ export default class SysConfig extends Entity<SysConfigState> {
     }
     get session() {
         return this.state.session;
-    }
-    get jvCommon() {
-        return this.state.jvCommon || {};
     }
     get isManager() {
         return this.state.isManager;

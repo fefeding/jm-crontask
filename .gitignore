@@ -6,6 +6,7 @@ node_modules/
 package-lock.json
 yarn.lock
 coverage/
+dist/
 .idea/
 run/
 .DS_Store
@@ -15,3 +16,9 @@ run/
 .tsbuildinfo.*
 *.tgz
 npminstall-debug.log
+src/public/
+view/
+.env
+layer/layer.zip
+npminstall-debug.log
+server.zip

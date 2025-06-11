@@ -2,17 +2,18 @@
 import Layout from '../components/layout/index.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { abortAllPending } from '@/adapter/ajax';
+import { checkLogin } from '@/service/login';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/admin',
+            path: '/',
             component: Layout,
-            redirect: '/admin/about',
+            redirect: '/admin/home',
             children: [
                 {
-                    path: 'about',
+                    path: 'admin/about',
                     name: 'about',
                     // route level code-splitting
                     // this generates a separate chunk (About.[hash].js) for this route
@@ -20,46 +21,51 @@ const router = createRouter({
                     component: () => import('../views/admin/aboutView.vue'),
                 },
                 {
-                    path: 'home',
+                    path: 'admin/home',
                     name: 'Home',
                     alias: 'index',
+                    meta: { title: '首页', needAuth: true },
                     // route level code-splitting
                     // this generates a separate chunk (About.[hash].js) for this route
                     // which is lazy-loaded when the route is visited.
                     component: () => import('../views/admin/homeView.vue'),
                 },
                 {
-                    path: 'login',
+                    path: 'admin/login',
                     name: 'login',
                     component: () => import('../views/admin/login.vue'),
                 },
                 {
-                    path: 'logout',
+                    path: 'admin/logout',
                     name: 'logout',
                     component: () => import('../views/admin/login.vue'),
                 },
                 {
-                    path: 'task',
+                    path: 'admin/task',
                     name: 'task',
                     children: [
                         {
                             path: 'list',
                             name: 'task_list',
+                            meta: { title: '任务列表', needAuth: true },
                             component: () => import('../views/admin/task/list.vue'),
                         },
                         {
                             path: 'edit',
                             name: 'task_edit',
+                            meta: { title: '任务编辑', needAuth: true },
                             component: () => import('../views/admin/task/edit.vue'),
                         },
                         {
                             path: 'instance',
                             name: 'task_instance',
+                            meta: { title: '任务实例', needAuth: true },
                             component: () => import('../views/admin/task/instance.vue'),
                         },
                         {
                             path: 'log',
                             name: 'task_log',
+                            meta: { title: '日志', needAuth: true },
                             component: () => import('../views/admin/task/log.vue'),
                         },
                     ]
@@ -72,6 +78,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     // 切换路由取消请求
     abortAllPending();
+
+    // 校验登陆态
+    if(to.meta?.needAuth) {
+        checkLogin();
+    }
+    
     next();
 });
 

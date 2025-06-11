@@ -3,7 +3,7 @@ import * as path from 'path';
 import devopsConfig from './devops.config';
 export default (appInfo: MidwayAppInfo) => {
     console.log(appInfo);
-    const webDist = path.join(__dirname, '../../web/dist/');
+    const webDist = path.join(__dirname, '../../dist/');
     const config = {
         // use for cookie sign key, should change to your own and keep security
         keys: appInfo.name + '_1641910879296_0612',
@@ -22,12 +22,12 @@ export default (appInfo: MidwayAppInfo) => {
             dataSource: {
                 default: {
                     type: 'mysql',
-                    host: '172.16.16.16',
-                    port: 3306,
-                    username: 'root',
-                    password: 'df@123456',
+                    host: process.env.DB_HOST||'',
+                    port: process.env.DB_PORT||3306,
+                    username: process.env.DB_USERNAME||'',
+                    password: process.env.DB_PASSWORD||'password',
                     database: 'db_crontask',
-                    synchronize: false,
+                    synchronize: true,
                     logging: false,
                     // 或者扫描形式
                     entities: ['**/model/**/*{.ts,.js}'],
@@ -39,7 +39,7 @@ export default (appInfo: MidwayAppInfo) => {
             defaultViewEngine: 'nunjucks',
             //默认view目录,本地开发目录必须在web下的，正式环境则是根目录下的view，因为web目录会被删
             rootDir: {
-                default: path.join(webDist, 'view'),
+                default: path.join(webDist, '../view/'),
             },
             mapping: {
                 '.html': 'nunjucks',
@@ -59,7 +59,7 @@ export default (appInfo: MidwayAppInfo) => {
          */
         apiOption: {
             // 接口请求校验key
-            key: '2024@fefeding#',
+            key: process.env.API_KEY || '2024@fefeding#',
         },
         // 查看系统信息
         info: {
@@ -87,8 +87,12 @@ export default (appInfo: MidwayAppInfo) => {
         // 基础服务
         baseService: {
             manager: 'admin',// 管理员帐号
-            appId: 2,
-            url: 'http://127.0.0.1:8089/base-server'
+            appId: process.env.APP_ID || 2,
+            url: process.env.BASE_SERVER_URL || 'http://127.0.0.1:8089/base-server'
+        },
+        // 登陆相关配置
+        sso: {
+            baseUrl: process.env.SSO_URL || '',
         },
         bodyParser: {
             formLimit: '30mb',

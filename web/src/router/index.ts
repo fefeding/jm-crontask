@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { abortAllPending } from '@/adapter/ajax';
 import Layout from '../components/layout/index.vue';
+import { checkLogin } from '@/service/login';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +35,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     // 切换路由取消请求
     abortAllPending();
+
+    // 校验登陆态
+    if(to.meta?.needAuth) {
+        checkLogin();
+    }
     next();
 });
 

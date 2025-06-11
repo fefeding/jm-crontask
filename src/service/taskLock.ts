@@ -60,7 +60,7 @@ export default class TaskLockService extends BaseModel<TaskLockOrm> {
         }
         catch(e) {
             console.log(e);
-            this.ctx.log.error('runLock error:',e)
+            this.ctx.logger?.error('runLock error:',e)
             await qryRunner.rollbackTransaction();
         }
         finally {

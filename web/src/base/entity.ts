@@ -22,6 +22,19 @@ export interface WatchCallBack {
     ): void;
 }
 
+// 菜单项类型
+export type MenuItem = {
+    id?: number|string,
+    label: string,
+    icon?: string,
+    path?: string;
+    /**
+     * 是否展开
+     */
+    expanded?: boolean,
+    children?: Array<MenuItem>;
+  }
+
 /**
  * @public
  * Entity class with watchable state.

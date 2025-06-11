@@ -16,7 +16,7 @@ export class RequestInitMiddleware implements IMiddleware<Context, NextFunction>
             if (!request_id) request_id = UUID().replace(/-/g, '');
 
             ctx.request_id = request_id;
-            console.log('request start', request_id);
+            console.log('request start', request_id, ctx.url);
             return next();
         };
     }

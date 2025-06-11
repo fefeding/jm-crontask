@@ -9,12 +9,6 @@ export default () => {
                 default: path.join(__dirname, '../../web/view'),
             },
         },
-        koa: {
-            // 全局路由前缀
-            globalPrefix: `${devopsConfig.prefixUrl}`,
-            port: Number(process.env.PORT) || 8091,
-            hostname: process.env.IP || '127.0.0.1',
-        },
         typeorm: {
         },
         staticFile: {
@@ -25,10 +19,6 @@ export default () => {
                     dir: path.join(__dirname, '../../web/public'),
                 },
             },
-        },
-        //基础服务
-        baseService: {
-            //url: 'http://127.0.0.1:7002/base-server'
         },
     };
 };

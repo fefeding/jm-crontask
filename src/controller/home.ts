@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Provide } from '@midwayjs/core';
+import { Controller, Get, Inject, Provide, Config } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { SessionService } from '../service/session';
 import devopsConfig from '../config/devops.config';
@@ -12,6 +12,8 @@ export class HomeController {
 
     @Inject()
     sessionService: SessionService;
+    @Config('sso')
+    ssoOption: any;
 
     @Get('/admin/login')
     @Get('/admin/logout')
@@ -30,7 +32,7 @@ export class HomeController {
 
     @Get('/*')
     @Get('/')
-    @checkLogin(true)// 需要登陆态的接口
+    @checkLogin(false)// 需要登陆态的接口
     async admin(): Promise<string> {
         return this.getDefaultTemplate('admin.html');
     }
@@ -61,6 +63,7 @@ export class HomeController {
                 config: {
                     prefix,
                 },
+		sso: this.ssoOption,
                 session: this.ctx.currentSession||null,
                 isManager: this.sessionService.checkManager(),
                 jvCommon: config?.jvCommon,
