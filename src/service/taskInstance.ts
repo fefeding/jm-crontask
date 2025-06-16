@@ -276,7 +276,10 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
         try {
 
             const task = await this.ctx.service.task.get(instance.taskId);
-
+            if(!task) {
+                console.error(instance, msg);
+                return;
+            }
             const data = {
                 //"touser" : "fefeding",
                 "toStaff": task.watcher || task.creator,

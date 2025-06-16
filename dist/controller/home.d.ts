@@ -3,6 +3,7 @@ import { SessionService } from '../service/session';
 export declare class HomeController {
     ctx: Context;
     sessionService: SessionService;
+    ssoOption: any;
     login(): Promise<string>;
     admin(): Promise<string>;
     /**

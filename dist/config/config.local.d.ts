@@ -4,11 +4,6 @@ declare const _default: () => {
             default: string;
         };
     };
-    koa: {
-        globalPrefix: string;
-        port: number;
-        hostname: string;
-    };
     typeorm: {};
     staticFile: {
         dirs: {
@@ -18,6 +13,5 @@ declare const _default: () => {
             };
         };
     };
-    baseService: {};
 };
 export default _default;

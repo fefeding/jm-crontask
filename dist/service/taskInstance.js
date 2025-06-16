@@ -238,6 +238,11 @@ let TaskInstanceService = class TaskInstanceService extends base_model_1.BaseMod
     async sendFaildMsg(instance, msg) {
         try {
             const task = await this.ctx.service.task.get(instance.taskId);
+            if(!task) {
+                console.error(instance, msg);
+                return;
+            }
+
             const data = {
                 //"touser" : "fefeding",
                 "toStaff": task.watcher || task.creator,

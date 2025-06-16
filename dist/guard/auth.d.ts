@@ -7,5 +7,6 @@ import { SessionService } from '../service/session';
 export declare class AuthGuard implements IGuard<Context> {
     sessionService: SessionService;
     canActivate(context: Context, supplierClz: any, methodName: string): Promise<boolean>;
-    checkAuth(context: Context, token: string): Promise<boolean>;
+    checkAuth(context: Context, token: string, needAuth?: boolean): Promise<boolean>;
+    authError(context: Context, error?: any): void;
 }

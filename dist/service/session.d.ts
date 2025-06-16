@@ -1,6 +1,8 @@
+import { MidwayCache } from '@midwayjs/cache-manager';
 import { BaseService } from '../base/base.service';
 import { Session, LoginByWxReq, LoginByWxRsp, LoginByAccountReq, LoginByAccountRsp } from '@fefeding/common/dist/models/account/session';
 export declare class SessionService extends BaseService {
+    sessionCache: MidwayCache;
     /**
      * 根据ID获取session
      * 并判断session是否在有效期
@@ -24,4 +26,10 @@ export declare class SessionService extends BaseService {
      * @returns
      */
     loginByAccount(loginParams: LoginByAccountReq): Promise<LoginByAccountRsp>;
+    /**
+     * 用临时码登陆
+     * @param code 登陆临时码
+     * @returns
+     */
+    loginByCode(code: string): Promise<import("@fefeding/common/dist/models/base/response").default<any>>;
 }
