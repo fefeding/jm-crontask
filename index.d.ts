@@ -20,6 +20,7 @@ declare module '@midwayjs/koa/dist/interface' {
             IS_PCWEIXIN: boolean,
             IS_WXWORK: boolean,
             IS_MINA: boolean,
+            REQUESTIP: string,
             HOSTNAME: string,
             CLIENTIP: string,
         }
