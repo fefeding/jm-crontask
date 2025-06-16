@@ -49,10 +49,10 @@ export function getAuthToken(ctx: Context) {
         const token =
         ctx.URL.searchParams.get('token') ||
         ctx.request.header['x-auth-token'] ||
-            body.token ||
-            ctx.cookies.get('token', {
-                signed: false,
-            });
+        ctx.cookies.get('token', {
+            signed: false,
+        }) ||
+            body.token ;
     return token;
 }
 

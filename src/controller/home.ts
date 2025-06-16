@@ -63,7 +63,7 @@ export class HomeController {
                 config: {
                     prefix,
                 },
-		sso: this.ssoOption,
+		    sso: this.ssoOption,
                 session: this.ctx.currentSession||null,
                 isManager: this.sessionService.checkManager(),
                 jvCommon: config?.jvCommon,

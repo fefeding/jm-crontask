@@ -1,6 +1,8 @@
 import { savePropertyMetadata, getPropertyMetadata } from '@midwayjs/core';
 import decorators from '@fefeding/common/dist/utils/decorator';
 
+const CheckIPKey = Symbol('CheckIPKey');
+
 /**
  * 判断是否校验token的api装饰器
  * @param need 是否要
@@ -63,6 +65,39 @@ export function checkLogin(need = true): MethodDecorator {
 export function getCheckLogin(target, propertyKey): any {
     const value = getPropertyMetadata(
         decorators.apiAuthMetadataKey,
+        target,
+        propertyKey
+    );
+    return value;
+}
+
+
+
+/**
+ * 判断是否校验在IP白名单内
+ * @param need 是否要
+ * @returns
+ */
+export function checkIP(need = true): MethodDecorator {
+    return (target, propertyKey) => {
+        // 只保存元数据
+        savePropertyMetadata(
+            CheckIPKey,
+            need,
+            target,
+            propertyKey
+        );
+    };
+}
+
+/**
+ * 获取装饰的是否需要校验IP白名单
+ * @param target 对象
+ * @param propertyKey 属性或方法名
+ */
+export function getCheckIP(target, propertyKey): any {
+    const value = getPropertyMetadata(
+        CheckIPKey,
         target,
         propertyKey
     );

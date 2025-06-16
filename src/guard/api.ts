@@ -1,6 +1,6 @@
 import { Guard, IGuard, Config } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
-import { getApiToken } from '../lib/decorator';
+import { getApiToken, getCheckIP } from '../lib/decorator';
 import api from '@fefeding/common/dist/utils/api';
 
 /**
@@ -14,11 +14,22 @@ export class ApiGuard implements IGuard<Context> {
         key: string;
     };
 
+    @Config('ipOption')
+    ipOption: {
+        whiteList: Array<string>;
+    };
+
     async canActivate(
         context: Context,
         supplierClz,
         methodName: string
     ): Promise<boolean> {
+        // 检查是否有IP白名单限制
+        const needIP = getCheckIP(supplierClz, methodName);
+        if(needIP) {
+            //console.log('check ip ', needIP);
+            this.checkIPInWhiteList(context);
+        }
         // 获取是否需要检查token
         const needToken = getApiToken(supplierClz, methodName);
 
@@ -63,6 +74,17 @@ export class ApiGuard implements IGuard<Context> {
                 `输入token:${reqToken}  本地: ${thisToken.sign} 不一致`
             );
             throw Error('token输入错误');
+        }
+    }
+
+    // 检查IP白名单
+    checkIPInWhiteList(context: Context) { 
+        const requestIp = context.detect?.REQUESTIP;
+        if(this.ipOption?.whiteList) {
+            if(!this.ipOption.whiteList.includes(requestIp)) {
+                context.logger.error(`IP:${requestIp} 不在白名单内`);
+                throw Error(`IP:${requestIp} 不在白名单内`);
+            }
         }
     }
 }

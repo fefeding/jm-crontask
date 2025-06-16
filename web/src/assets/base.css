@@ -58,3 +58,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.btn + .btn {
+  margin-left: .5rem;
+}

@@ -35,9 +35,11 @@ export class DetectGuard implements IGuard<Context> {
         const VER_MINA = /miniProgram/i.test(UA);
         const IS_MINA = Boolean(VER_MINA);
 
-        const clientIP = (ctx.request.header['x-client-ip'] ||
-            ctx.request.header['x-forwarded-for'] ||
-            ctx.request.ip || '').toString();
+        let requestIP = (ctx.request.header['x-forwarded-for'] ||
+        ctx.request.ip || '').toString();
+        if(requestIP.includes(',')) requestIP = requestIP.split(',')[0];
+        
+        const clientIP = (ctx.request.header['x-client-ip'] || requestIP).toString();
         
         const hostname = ctx.get('tencent-acceleration-domain-name') || ctx.request.hostname;
 
@@ -51,6 +53,7 @@ export class DetectGuard implements IGuard<Context> {
             IS_WXWORK,
             IS_MINA,
             CLIENTIP: clientIP,
+            REQUESTIP: requestIP,
             HOSTNAME: hostname,
         }
 
