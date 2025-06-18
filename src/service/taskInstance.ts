@@ -97,12 +97,12 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
                     msgs = msgs || [];
                     const log =  `[${type}][${instance.id}] ${msgs.map((v)=>typeof v ==='object'? JSON.stringify(v):v).join('\n')}\n`;
 
-                    if(instance.log?.length > 1000){
-                        instance.log = instance.log.substring(0,1000) + `\n 更多日志请移步es查询包含[${instance.id}]`;
-                    }
-                    else {
+                    // if(instance.log?.length > 1000){
+                    //     instance.log = instance.log.substring(0,1000) + `\n 更多日志请移步es查询包含[${instance.id}]`;
+                    // }
+                    // else {
                         instance.log += log;
-                    }
+                    //}
 
                     logger && logger[type] && (logger[type](log));
                 }
