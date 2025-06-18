@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "@fefeding/common": "^1.0.48",
+    "@fefeding/common": "^1.0.52",
     "@hardik_sharma/cron-parser-all": "^0.0.2",
     "@midwayjs/axios": "^3.20.3",
     "@midwayjs/bootstrap": "^3.20.3",

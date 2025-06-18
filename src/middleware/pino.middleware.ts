@@ -1,7 +1,7 @@
 import { Middleware, IMiddleware, Config } from '@midwayjs/core';
 import { NextFunction, Context } from '@midwayjs/koa';
 import * as ip from 'ip';
-import PinoLogger from '../lib/pinoTransport';
+import PinoLogger from '@fefeding/common/dist/utils/logger';
 
 @Middleware()
 export class PinoLoggerMiddleware implements IMiddleware<Context, NextFunction> {
