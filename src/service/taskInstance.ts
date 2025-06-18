@@ -144,6 +144,12 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
                     },
                     'process': null,
                     "task": task,
+                    "request": async (url: string, data?: any, option?: any) => { 
+                        return await this.requestBaseApi(url, {
+                            data,
+                            ...option
+                        });
+                    },
                     // 等待一定时间
                     "sleep": async (time: number = 10) => {
                         //time = Math.min(time, 20000);// 最多支持等待时间

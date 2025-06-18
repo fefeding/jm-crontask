@@ -80,11 +80,11 @@ export class BaseService {
                 req.timestamp = thisToken.timestamp;                
             }*/
         }
-        headers['x-request-id'] = this.ctx.request_id;        
-        headers['x-auth-token'] = this.ctx.currentSession?.id || '';
-        const ip = (this.ctx.request.header['x-client-ip'] ||
-            this.ctx.request.header['x-forwarded-for'] ||
-            this.ctx.request.ip || '').toString();
+        headers['x-request-id'] = this.ctx?.request_id || '';        
+        headers['x-auth-token'] = this.ctx?.currentSession?.id || '';
+        const ip = (this.ctx?.request?.header?.['x-client-ip'] ||
+            this.ctx?.request?.header?.['x-forwarded-for'] ||
+            this.ctx?.request?.ip || '').toString();
         headers['x-client-ip'] = ip;
 
         option.headers = headers;
