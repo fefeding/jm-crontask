@@ -54,7 +54,7 @@ export class BaseService {
      * @param account 
      */
     checkManager(account: string = this.ctx.currentSession?.account?.account) {
-        return account && this.baseServiceOption.manager === account;
+        return account && (this.baseServiceOption.manager === account || this.baseServiceOption.manager?.includes(account));
     }
 
     /**

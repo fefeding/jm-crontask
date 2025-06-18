@@ -86,7 +86,7 @@ export default (appInfo: MidwayAppInfo) => {
         },
         // 基础服务
         baseService: {
-            manager: 'admin',// 管理员帐号
+            manager: ['admin', 'fefeding'],// 管理员帐号
             appId: process.env.APP_ID || 2,
             url: process.env.BASE_SERVER_URL || 'http://127.0.0.1:8089/base-server'
         },
