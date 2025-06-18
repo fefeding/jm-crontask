@@ -11,6 +11,7 @@ import { join } from 'path';
 import { NotFoundFilter } from './filter/notfound.filter';
 import { ApiResultFormatterMiddleware } from './middleware/apiResultFormatter';
 import { RequestInitMiddleware } from './middleware/requestInit';
+import { DetectMiddleware } from './middleware/detect.middleware';
 import { PinoLoggerMiddleware } from './middleware/pino.middleware';
 import * as view from '@midwayjs/view-nunjucks';
 import * as staticFile from '@midwayjs/static-file';
@@ -18,7 +19,6 @@ import * as cacheManager from '@midwayjs/cache-manager';
 import devopsConfig from './config/devops.config';
 import { ApiGuard } from './guard/api';
 import { AuthGuard } from './guard/auth';
-import { DetectGuard } from './guard/detect';
 // import * as core from '@jt/midway-core';
 
 // load .env file in process.cwd
@@ -48,20 +48,22 @@ export class ContainerLifeCycle {
     @Inject()
     framework: koa.Framework;
 
-    async onConfigLoad(container) {}
+    async onConfigLoad(container) {
+        
+    }
 
     async onReady() {
         process.env.SERVICE_NAME = process.env.SERVICE_NAME || this.app.getProjectName();
         // 接口守位
         this.app.useGuard([
-            DetectGuard, 
             ApiGuard, 
             AuthGuard
         ]);
 
         // add middleware
         this.app.useMiddleware([
-            RequestInitMiddleware,    
+            RequestInitMiddleware,  
+            DetectMiddleware,  
             PinoLoggerMiddleware,        
             ApiResultFormatterMiddleware,
         ]);

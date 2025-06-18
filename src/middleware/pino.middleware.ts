@@ -1,7 +1,7 @@
 import { Middleware, IMiddleware, Config } from '@midwayjs/core';
 import { NextFunction, Context } from '@midwayjs/koa';
 import * as ip from 'ip';
-import PinoLogger from '@fefeding/common/dist/utils/logger';
+import Logger from '@fefeding/common/dist/utils/logger';
 
 @Middleware()
 export class PinoLoggerMiddleware implements IMiddleware<Context, NextFunction> {
@@ -21,7 +21,7 @@ export class PinoLoggerMiddleware implements IMiddleware<Context, NextFunction> 
   }
   resolve() {
     return async (ctx: Context, next: NextFunction) => {
-      const logger = new PinoLogger({
+      const logger = new Logger({
         remoteUrl: this.loggerConfig?.remoteUrl,
         serviceName: process.env.SERVICE_NAME,
         logLevel: this.loggerConfig?.level,

@@ -21,7 +21,7 @@
     "@midwayjs/view-nunjucks": "^3.16.8",
     "@tars/config": "^2.0.5",
     "@tars/rpc": "^2.0.15",
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "dayjs": "^1.11.13",
     "dotenv": "^16.5.0",
     "ip": "^2.0.1",
