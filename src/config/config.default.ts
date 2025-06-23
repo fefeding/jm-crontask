@@ -76,7 +76,7 @@ export default (appInfo: MidwayAppInfo) => {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                     },
-                    timeout: 1000, // default is `0` (no timeout)
+                    timeout: 600000, // default is `0` (no timeout)
 
                     // `withCredentials` indicates whether or not cross-site Access-Control requests
                     // should be made using credentials
