@@ -3,6 +3,7 @@ import * as path from 'path';
 import devopsConfig from './devops.config';
 export default (appInfo: MidwayAppInfo) => {
     console.log(appInfo);
+    const appId = process.env.APP_ID || 2;
     const webDist = path.join(__dirname, '../../dist/');
     const config = {
         // use for cookie sign key, should change to your own and keep security
@@ -87,12 +88,13 @@ export default (appInfo: MidwayAppInfo) => {
         // 基础服务
         baseService: {
             manager: ['admin', 'fefeding'],// 管理员帐号
-            appId: process.env.APP_ID || 2,
+            appId: appId,
             url: process.env.BASE_SERVER_URL || 'http://127.0.0.1:8089/base-server'
         },
         // 登陆相关配置
         sso: {
             baseUrl: process.env.SSO_URL || '',
+            appId: appId,
         },
         bodyParser: {
             formLimit: '30mb',
