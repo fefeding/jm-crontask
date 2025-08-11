@@ -115,7 +115,7 @@ export class AuthGuard implements IGuard<Context> {
             let loginUrl = `${this.ssoOption?.baseUrl||devopsConfig.prefixUrl}/login`;
             const redirectUrl = context.URL.toString();
             if(!context.URL.pathname?.includes('/login')) {
-                context.redirect(`${loginUrl}?url=${encodeURIComponent(redirectUrl)}`);
+                context.redirect(`${loginUrl}?url=${encodeURIComponent(redirectUrl)}&appid=${this.ssoOption?.appId||0}`);
             }
             else {
                 context.redirect(loginUrl);
