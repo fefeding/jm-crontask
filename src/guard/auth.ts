@@ -21,7 +21,7 @@ export class AuthGuard implements IGuard<Context> {
 
     async canActivate(
         context: Context,
-        supplierClz,
+        supplierClz: any,
         methodName: string
     ): Promise<boolean> {
         // 获取是否需要检查登陆态
@@ -112,9 +112,17 @@ export class AuthGuard implements IGuard<Context> {
             throw error;
         }
         else {
-            let loginUrl = `${this.ssoOption?.baseUrl||devopsConfig.prefixUrl}/login`;
-            const redirectUrl = context.URL.toString();
-            if(!context.URL.pathname?.includes('/login')) {
+            const loginUrl = `${this.ssoOption?.baseUrl||devopsConfig.prefixUrl}/login`;
+            
+            // 如果本来就以/login结尾，则直跳
+            if(!/\/login\/?(\?|$|#)/.test(context.URL.pathname)) {
+                const URL = context.URL;
+                if(context.detect?.HOSTNAME && URL.hostname !== context.detect?.HOSTNAME) URL.hostname = context.detect.HOSTNAME;
+                URL.searchParams.delete('jv_auth_code');
+                URL.searchParams.delete('token');
+                URL.searchParams.delete('auth_code');// 移除auth_code参数
+                const redirectUrl = context.URL.toString();
+
                 context.redirect(`${loginUrl}?url=${encodeURIComponent(redirectUrl)}&appid=${this.ssoOption?.appId||0}`);
             }
             else {

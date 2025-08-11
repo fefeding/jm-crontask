@@ -36,6 +36,7 @@ export function getDefaultTemplate(ctx: Context, file='index.html', data: any = 
             ...data
         },
         title: devopsConfig.siteTitle,
+        description: process.env.DESCRIPTION || '',
         env: process.env,
         viteTarget: viteTarget ? `//${ctx.hostname}:${viteTarget}` : '',
     };
