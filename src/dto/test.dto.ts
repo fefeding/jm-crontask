@@ -1,5 +1,4 @@
 import { Rule, RuleType } from '@midwayjs/validate';
-import { BaseSelectDTO } from '../base/base.dto';
 
 export class GetTestDTO {
     @Rule(RuleType.number())
@@ -12,5 +11,3 @@ export class CreateTestDTO {
     @Rule(RuleType.string())
     commit?: string;
 }
-
-export class GetTestListDTO extends BaseSelectDTO {}

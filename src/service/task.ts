@@ -1,7 +1,7 @@
 import { Provide, Scope, ScopeEnum } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import * as moment from 'moment';
-import { BaseModel } from '../base/base.model';
+import { BaseModelService } from '@cicctencent/midwayjs-base';
 import { TaskConfig } from '../model/taskConfig';
 import { TaskInstance } from '../model/taskInstance';
 import { TaskState, TaskStatus, TaskTimeSize } from '../model/taskConst';
@@ -13,7 +13,7 @@ const parser = require('@hardik_sharma/cron-parser-all');
  */
 @Provide()
 @Scope(ScopeEnum.Request, { allowDowngrade: true })
-export default class TaskService extends BaseModel<TaskConfig> {
+export default class TaskService extends BaseModelService<TaskConfig> {
 
     @InjectEntityModel(TaskConfig)
     protected model: Repository<TaskConfig>;

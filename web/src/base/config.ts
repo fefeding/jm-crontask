@@ -1,11 +1,13 @@
 // 基础配置
-import { sysConfig } from '../domain/SysConfig';
-const config =
-    (window.__INITIAL_STATE__ && window.__INITIAL_STATE__.config) || {};
+
+const state = window.__INITIAL_STATE__ || {};
+
+const config = state.config || {};
+
 const prefix = config.prefix || '';
 export default {
     ...config,
-    isManager: sysConfig.isManager,
+    state,
     prefix,
     // api的根URL
     baseURL: `${location.origin}` + prefix,

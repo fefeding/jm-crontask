@@ -1,18 +1,10 @@
 import type { MidwayConfig, MidwayAppInfo } from '@midwayjs/core';
-import * as path from 'path';
 import devopsConfig from './devops.config';
 export default (appInfo: MidwayAppInfo) => {
-    console.log(appInfo);
-    const appId = process.env.APP_ID || 2;
-    const webDist = path.join(__dirname, '../../dist/');
-    const config = {
+    console.log('prefix', devopsConfig.prefixUrl);
+    const config = {    
         // use for cookie sign key, should change to your own and keep security
-        keys: appInfo.name + '_1641910879296_0612',
-        cookies: {
-            // 确保不设置secret，或者设置为空字符串
-            secret: '', // 如果为空字符串，则关闭加密，但仍然可以解密已加密的cookies
-            // ...
-        },
+        keys: appInfo.name + '_1641910879296_0612',    
         koa: {
             // 全局路由前缀
             globalPrefix: `${devopsConfig.prefixUrl}`,
@@ -33,72 +25,50 @@ export default (appInfo: MidwayAppInfo) => {
                     // 或者扫描形式
                     entities: ['**/model/**/*{.ts,.js}'],
                 },
-            }
-        },
-        view: {
-            //默认view目录
-            defaultViewEngine: 'nunjucks',
-            //默认view目录,本地开发目录必须在web下的，正式环境则是根目录下的view，因为web目录会被删
-            rootDir: {
-                default: path.join(webDist, '../view/'),
-            },
-            mapping: {
-                '.html': 'nunjucks',
             },
         },
-        staticFile: {
+        session: {
+            // session 过期设置
+            timeout: Number(process.env.SESSION_TIMEOUT) || 20 * 60 * 1000,
+            serviceKey: 'session:service',
+        },
+      // 静态文件服务  
+      staticFile: {
             dirs: {
                 default: {
                     prefix: `${devopsConfig.prefixUrl}/public`,
-                    // 默认public目录
-                    dir: path.join(webDist, 'public'),
                 },
             },
+            gzip: true,
         },
-        /**
-         * api相关配置
-         */
-        apiOption: {
-            // 接口请求校验key
-            key: process.env.API_KEY || '2024@fefeding#',
-        },
-        // 查看系统信息
-        info: {
-            infoPath: '/_sys_info',
-        },
-        axios: {
-            default: {
-                // 所有实例复用的配置
-            },
-            clients: {
-                // 默认实例的配置
-                default: {
-                    // `headers` are custom headers to be sent
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                    timeout: 600000, // default is `0` (no timeout)
-
-                    // `withCredentials` indicates whether or not cross-site Access-Control requests
-                    // should be made using credentials
-                    withCredentials: false, // default
-                },
-            },
+        // 登陆态校验配置
+        auth: {
+            // 忽略登陆态校验
+            ignores: [
+                /\/api\/test\//i,
+                "/api/test/action"
+            ]
         },
         // 基础服务
         baseService: {
             manager: ['admin', 'fefeding'],// 管理员帐号
-            appId: appId,
-            url: process.env.BASE_SERVER_URL || 'http://127.0.0.1:8089/base-server'
         },
-        // 登陆相关配置
-        sso: {
-            baseUrl: process.env.SSO_URL || '',
-            appId: appId,
-        },
-        bodyParser: {
-            formLimit: '30mb',
-            jsonLimit: '30mb',
+        busboy: {
+            mode: 'file',
+            cleanTimeout: 5 * 60 * 1000,
+          },
+        tencentCosOption: {
+            default: {
+                /** 存储桶的名称，格式为<bucketname-appid>，例如examplebucket-1250000000 */
+                Bucket: '',
+                // /** 存储桶所在地域，如果有传入只返回该地域的存储桶列表 */
+                Region: 'ap-guangzhou',
+                url: '',
+                // /** 请求的对象键，最前面不带 / */
+                // Key: Key;
+                // /** 发请求时带上的 Header 字段 */
+                // Headers?: Headers;
+            },
         },
     } as MidwayConfig;
     return config;

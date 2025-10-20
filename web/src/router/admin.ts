@@ -1,5 +1,4 @@
 
-import Layout from '../components/layout/index.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import { abortAllPending } from '@/adapter/ajax';
 import { checkLogin } from '@/service/login';
@@ -9,7 +8,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: Layout,
+            component: ()=>import('../components/layout/index.vue'),
             redirect: '/admin/home',
             children: [
                 {
@@ -81,6 +80,7 @@ router.beforeEach((to, from, next) => {
 
     // 校验登陆态
     if(to.meta?.needAuth) {
+        debugger
         checkLogin();
     }
     

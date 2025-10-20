@@ -1,4 +1,6 @@
 import Entity from '../base/entity';
+import config from '@/base/config';
+
 /**
  *  系统配置Domain
  */
@@ -42,8 +44,26 @@ export default class SysConfig extends Entity<SysConfigState> {
     get session() {
         return this.state.session;
     }
-    get isManager() {
-        return this.state.isManager;
+
+    get rootUrl() {
+        return location.origin + (this.config?.prefix || '');
+    }
+    
+    get baseUrl() {
+        if(this.sso?.baseUrl) return this.sso.baseUrl;
+        else {
+            return this.rootUrl;
+        }
+    }
+
+    getLoginUrl(redirectUrl = location.href) {
+        if(this.baseUrl === this.rootUrl) return this.baseUrl + '/login';
+        return this.baseUrl + '/login?url=' + encodeURIComponent(redirectUrl);
+    }
+
+    getLogoutUrl(redirectUrl = location.href) {
+        if(this.baseUrl === this.rootUrl) return this.baseUrl + '/logout';
+        return this.baseUrl + '/logout?url=' + encodeURIComponent(redirectUrl);
     }
 }
-export const sysConfig = new SysConfig(Object.assign({}, window.__INITIAL_STATE__));
+export const sysConfig = new SysConfig(config.state);

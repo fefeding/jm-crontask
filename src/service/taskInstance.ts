@@ -5,7 +5,7 @@ import { QueryRunner, Repository } from 'typeorm';
 import * as path from 'path';
 import * as jsruntime from 'jm-jsruntime';
 import axios from 'axios';
-import { BaseModel } from '../base/base.model';
+import { BaseModelService } from '@cicctencent/midwayjs-base';
 
 import TaskConfigOrm from '../model/taskConfig';
 
@@ -18,7 +18,7 @@ import TaskService from './task';
  */
 @Provide()
 @Scope(ScopeEnum.Request, { allowDowngrade: true })
-export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
+export default class TaskInstanceService extends BaseModelService<TaskInstanceOrm> {
 
     @InjectEntityModel(TaskInstanceOrm)
     protected model: Repository<TaskInstanceOrm>;

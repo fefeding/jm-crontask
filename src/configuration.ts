@@ -1,72 +1,41 @@
-import { Configuration, App, Inject } from '@midwayjs/core';
-import * as koa from '@midwayjs/koa';
-import * as validate from '@midwayjs/validate';
-import * as info from '@midwayjs/info';
-import * as axios from '@midwayjs/axios';
-import * as dotenv from 'dotenv';
+import { Configuration, App } from '@midwayjs/core';
+import * as busboy from '@midwayjs/busboy';
+import * as codeDye from '@midwayjs/code-dye';
+
 //import * as swagger from '@midwayjs/swagger';
 import * as orm from '@midwayjs/typeorm';
 import { join } from 'path';
 // import { DefaultErrorFilter } from './filter/default.filter';
 import { NotFoundFilter } from './filter/notfound.filter';
-import { ApiResultFormatterMiddleware } from './middleware/apiResultFormatter';
-import { RequestInitMiddleware } from './middleware/requestInit';
-import { DetectMiddleware } from './middleware/detect.middleware';
-import { PinoLoggerMiddleware } from './middleware/pino.middleware';
-import * as view from '@midwayjs/view-nunjucks';
-import * as staticFile from '@midwayjs/static-file';
+// import * as view from '@midwayjs/view-nunjucks';
+// import * as staticFile from '@midwayjs/static-file';
 import * as cacheManager from '@midwayjs/cache-manager';
 import devopsConfig from './config/devops.config';
-import { ApiGuard } from './guard/api';
-import { AuthGuard } from './guard/auth';
-// import * as core from '@jt/midway-core';
 
-// load .env file in process.cwd
-dotenv.config();
+import * as baseMidwayjs from '@cicctencent/midwayjs-base';
 
 @Configuration({
     imports: [
-        koa,
-        validate,
         {
-            component: info,
-            enabledEnvironment: ['local'],
+            component: codeDye,
+            enabledEnvironment: ['local'],    // 只在本地启用
         },
-        view,
-        staticFile,
-        axios,
+        busboy,
         orm,
         cacheManager,
-        //swagger,
+        baseMidwayjs,
     ],
     importConfigs: [join(__dirname, './config')],
 })
 export class ContainerLifeCycle {
     @App()
-    app: koa.Application;
-
-    @Inject()
-    framework: koa.Framework;
+    app: baseMidwayjs.koa.Application;
 
     async onConfigLoad(container) {
         
     }
 
     async onReady() {
-        process.env.SERVICE_NAME = process.env.SERVICE_NAME || this.app.getProjectName();
-        // 接口守位
-        this.app.useGuard([
-            ApiGuard, 
-            AuthGuard
-        ]);
-
-        // add middleware
-        this.app.useMiddleware([
-            RequestInitMiddleware,  
-            DetectMiddleware,  
-            PinoLoggerMiddleware,        
-            ApiResultFormatterMiddleware,
-        ]);
         // add filter
         this.app.useFilter([NotFoundFilter]);
     }

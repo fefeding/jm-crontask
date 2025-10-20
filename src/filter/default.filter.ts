@@ -1,13 +1,13 @@
 import { Catch } from '@midwayjs/core';
-import { Context } from '@midwayjs/koa';
+import { koa } from '@cicctencent/midwayjs-base';
 
 @Catch()
 export class DefaultErrorFilter {
-    async catch(err: Error, ctx: Context) {
+    async catch(err: Error, ctx: koa.Context) {
         // 所有的未分类错误会到这里
         return {
-            success: false,
-            message: err.message,
+            ret: 1000,
+            msg: err.message,
         };
     }
 }

@@ -2,7 +2,7 @@ import { Autoload,Provide, Scope, ScopeEnum, Init, Inject } from '@midwayjs/core
 import { QueryRunner } from 'typeorm';
 import * as moment from 'moment';
 import * as ip from 'ip';
-import { BaseService } from '../../base/base.service';
+import { BaseService } from '@cicctencent/midwayjs-base';
 import { TaskLockKeys, TaskStatus } from '../../model/taskConst';
 import TaskService from '../task';
 import InstanceService from '../taskInstance';
