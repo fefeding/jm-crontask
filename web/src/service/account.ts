@@ -1,6 +1,6 @@
 
 import type { PageResponse } from '@fefeding/common/dist/models/base/pagination';
-import { request } from './base';
+import { request, getRequestUrl } from './base';
 import type Account from '@fefeding/common/dist/models/account/account';
 import type User from '@fefeding/common/dist/models/account/user';
 
@@ -65,6 +65,26 @@ export async function getByLoginId(id: number) {
 export async function remove(id: number) {
     const res = await request('/api/account/delete', {
         id
+    });
+    return res;
+}
+export function getAvatarUrl(userId: Number) {
+    const url = getRequestUrl('/api/account/avatar') + `?userId=${userId}`;
+    return url;
+}
+
+export async function uploadAvatar(formData: FormData) {
+    const res = await request('/api/account/uploadAvatar', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        // 可选：上传进度监听
+        onUploadProgress: (progressEvent) => {
+            const percent = Math.round(
+            (progressEvent.loaded / (progressEvent.total || 1)) * 100
+            );
+            console.log(`上传进度：${percent}%`);
+        }
     });
     return res;
 }

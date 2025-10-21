@@ -29,9 +29,9 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-//import Header from './Header.vue';
-import Sidebar from './Aside.vue';
-import MainContent from './Content.vue';
+//import Header from './components/Header.vue';
+import Sidebar from './components/Aside.vue';
+import MainContent from './components/Content.vue';
 
 import menus from '../../base/menu';
 

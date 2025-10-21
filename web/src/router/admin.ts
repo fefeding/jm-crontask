@@ -79,8 +79,7 @@ router.beforeEach((to, from, next) => {
     abortAllPending();
 
     // 校验登陆态
-    if(to.meta?.needAuth) {
-        debugger
+    if(to.meta?.needAuth) {        
         checkLogin();
     }
     
