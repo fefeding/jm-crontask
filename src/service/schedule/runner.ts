@@ -35,7 +35,6 @@ export class RunnerService extends BaseService {
     // 任务分配主进程
     async master() {
         try {
-            return;
             // 在锁的事务中执行
             await this.taskLockService.runLock(TaskLockKeys.master, async (queryInner: QueryRunner) => {
                 // 先停掉超时的任务
