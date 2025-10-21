@@ -19,7 +19,7 @@ export default (appInfo: MidwayAppInfo) => {
                     port: process.env.DB_PORT||3306,
                     username: process.env.DB_USERNAME||'',
                     password: process.env.DB_PASSWORD||'password',
-                    database: 'db_crontask',
+                    database: process.env.DB_DATABASE||'db_crontask',
                     synchronize: true,
                     logging: false,
                     // 或者扫描形式

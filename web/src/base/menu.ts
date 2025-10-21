@@ -6,19 +6,19 @@ export default [
    {
     id: 'home',
       path: '/admin/home',
-      icon: 'HomeFilled',
+      icon: 'bi-speedometer2',
       name: '首页',
     },
     {
       id: 'task',
       path: '/admin/task/list',
-      icon: 'Tickets',
+      icon: 'bi-list-task',
       name: '任务管理',
     },
     {
       id: 'instance',
       path: '/admin/task/instance',
-      icon: 'StarFilled',
+      icon: 'bi-flower1',
       name: '运行实例',
     },  
 ]
