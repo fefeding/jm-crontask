@@ -20,7 +20,6 @@ export class SessionService extends ISessionService {
         const req = new GetLoginSessionReq();
         req.id = id;
         const res = await this.requestBaseApi<GetLoginSessionRes>(req);
-        console.log(res);
         return res?.data || null;
     }
     /**

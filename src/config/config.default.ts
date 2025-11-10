@@ -9,7 +9,7 @@ export default (appInfo: MidwayAppInfo) => {
             // 全局路由前缀
             globalPrefix: `${devopsConfig.prefixUrl}`,
             port: Number(process.env.PORT) || 8092,
-            hostname: process.env.IP || '127.0.0.1',
+            hostname: process.env.IP || '0.0.0.0',
         },
         typeorm: {
             dataSource: {

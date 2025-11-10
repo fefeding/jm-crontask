@@ -15,6 +15,7 @@
                         <button type="button" v-if="props.confirmButton.show" class="btn btn-primary" @click="confirm">{{props.confirmButton.text}}</button>
                     </slot>
                 </div>
+                <Loading :isLoading="props.isLoading" :message="props.loadingMessage"></Loading>
             </div>
         </div>
     <div class="modal-backdrop fade show" v-if="modalShow"></div>
@@ -22,8 +23,9 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref, onMounted, onUnmounted } from 'vue';
+    import { ref, onMounted, onUnmounted, watch } from 'vue';
     import * as bootstrap from 'bootstrap';
+    import Loading from '@/components/loading/index.vue';
 
     // 生成唯一ID，用于区分不同的modal实例
     const modalId = `modal-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -47,9 +49,21 @@
                 show: true
             }
         },
+        isLoading: {
+            type: Boolean,
+            default: false
+        },
+        loadingMessage: {
+            type: String,
+            default: '处理中...'
+        },
         style: {
             type: Object,
             default: {}
+        },
+        visible: {
+            type: Boolean,
+            default: false,
         },
         isFullScreen: {
             type: Boolean,
@@ -57,7 +71,7 @@
         }
     });
 
-    const emits = defineEmits(['onConfirm', 'onClose', 'hidden']);
+    const emits = defineEmits(['onConfirm', 'onClose', 'onCancel', 'hidden']);
   
     const modalShow = ref(false);
     const modalContainer = ref<HTMLElement>(null as any);
@@ -104,6 +118,7 @@
         console.log(`Modal ${modalId} hidden`);
         modalShow.value = false;
         emits('onClose');
+        emits('onCancel');
         emits('hidden');
     }
 
@@ -120,6 +135,16 @@
     function confirm() {
         emits('onConfirm');
     }
+
+    watch(()=>props.visible, (visible) => {
+        if(modalShow.value === visible) return;
+        if(visible) {
+            show();
+        }
+        else {
+            hide();
+        }
+    });
 
     onMounted(()=>{
         modal = getModal();

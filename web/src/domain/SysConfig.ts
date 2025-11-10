@@ -45,6 +45,10 @@ export default class SysConfig extends Entity<SysConfigState> {
         return this.state.session;
     }
 
+    get isManager() {
+        return this.state.isManager;
+    }
+
     get rootUrl() {
         return location.origin + (this.config?.prefix || '');
     }

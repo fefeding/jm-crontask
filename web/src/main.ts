@@ -16,7 +16,7 @@ import 'bootstrap';
 
 import router from './router/admin';
 
-import toastPlugin from '@/components/totast/index';
+import toastPlugin from '@/components/toast/index';
 import Modal from '@/components/modal/index.vue';
 import DataGrid from '@/components/dataGrid/index.vue';
 

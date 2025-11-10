@@ -4,8 +4,10 @@
     <table class="table table-light table-striped table-hover">
         <thead class="table-light">
             <tr>
-                <th v-for="column in props.columns" :key="column.name" scope="col" class="datagrid-th" :style="column.headerStyle||''" >
-                  <span>{{column.text||column.name||column}}</span>
+                <th v-for="column in props.columns" :key="column.name" scope="col" class="datagrid-th" :style="column.headerStyle||''" > 
+                  <slot :name="column.name+'_header'" :column="column">
+                        <span>{{column.text||column.name||''}}</span>
+                    </slot>                    
                 </th>
             </tr>
         </thead>

@@ -24,6 +24,7 @@
             "@/*": ["./src/*"],
             "#/*": ["../*"]
         },
+        "noImplicitAny": false,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "bundler"

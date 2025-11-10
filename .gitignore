@@ -22,3 +22,4 @@ src/public/
 layer/layer.zip
 npminstall-debug.log
 server.zip
+pnpm-lock.yaml

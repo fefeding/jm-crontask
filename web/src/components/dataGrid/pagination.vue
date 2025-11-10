@@ -27,7 +27,7 @@
 </template>
     
 <script setup lang="ts">
-import { ref, computed, defineComponent } from 'vue';
+import { ref, computed, } from 'vue';
     
 const props = defineProps({
     // 总页数
@@ -47,7 +47,7 @@ const currentPage = ref(1);
 
 // 可见的页码列表（包括省略号）
 const visiblePages = computed(() => {
-    const pages = [];
+    const pages = [] as Array<any>;
     const maxVisiblePages = 5; // 最大可见页码数（不包括省略号）
     
     // 总页数较少时，显示所有页码
@@ -102,7 +102,6 @@ const goToPage = (page: number|string) => {
         emits('pageChanged', currentPage.value);
     }
 };
-
 </script>
     
 <style scoped>

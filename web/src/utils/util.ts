@@ -36,3 +36,23 @@ export function parseAiJSON(str: string) {
         }
     }
 }
+
+export function downloadBlob(blob: Blob, fileName: string) {
+    // @ts-ignore
+    if (window.navigator.msSaveBlob) {
+      // @ts-ignore IE 专用
+      window.navigator.msSaveBlob(blob, fileName);
+    } else {
+      // 现代浏览器
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    }
+  }
