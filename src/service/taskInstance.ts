@@ -87,6 +87,7 @@ export default class TaskInstanceService extends BaseModelService<TaskInstanceOr
      * @param db
      */
     async runTask(instance: TaskInstanceOrm) {
+        console.log('run task', instance);
         // const logger = this.ctx.logger;
         const logger = this.ctx.log;
         // 发布脚本中的console托管。记录日志
