@@ -1,16 +1,5 @@
 <template>
   <div>
-    <!-- 确认对话框 -->
-    <Modal 
-      v-if="confirmModal"
-      :title="confirmModal.title"
-      :confirmButton="{ show: true, text: '确认' }"
-      :closeButton="{ show: true, text: '取消' }"
-      @onConfirm="confirmModal.confirmCallback"
-      @onClose="confirmModal.cancelCallback"
-    >
-      {{ confirmModal.message }}
-    </Modal>
 
     <div class="row mb-3">
       <div class="col">
@@ -98,7 +87,6 @@ import Modal from '@/components/modal/index.vue';
 
 const instance = getCurrentInstance();
 const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastType;
-const confirmModal = ref();
 
 // 表格列定义
 const tableColumns = computed(() => [
@@ -149,15 +137,7 @@ const tableColumns = computed(() => [
 
     // 废弃实例
     async function setFailed(id: number) {
-        const confirmed = await new Promise((resolve) => {
-            const modalData = ref({
-                title: '确认作废',
-                message: '确定要废弃当前实例吗？，已经在运行时不会起作用，这里主要用于清理异常数据。',
-                confirmCallback: () => resolve(true),
-                cancelCallback: () => resolve(false)
-            });
-            confirmModal.value = modalData;
-        });
+        const confirmed = confirm('确定要废弃当前实例吗？，已经在运行时不会起作用，这里主要用于清理异常数据。');
 
         if (!confirmed) return;
 
