@@ -27,7 +27,7 @@
 </template>
     
 <script setup lang="ts">
-import { ref, computed, } from 'vue';
+import { computed } from 'vue';
     
 const props = defineProps({
     // 总页数
@@ -43,12 +43,11 @@ const props = defineProps({
 
 const emits = defineEmits(['pageChanged']);
 
-const currentPage = ref(1);
-
 // 可见的页码列表（包括省略号）
 const visiblePages = computed(() => {
     const pages = [] as Array<any>;
     const maxVisiblePages = 5; // 最大可见页码数（不包括省略号）
+    const current = props.currentPage;
     
     // 总页数较少时，显示所有页码
     if (props.totalPages <= maxVisiblePages) {
@@ -59,12 +58,12 @@ const visiblePages = computed(() => {
     }
     
     // 总页数较多时，智能显示部分页码
-    if (currentPage.value <= 3) {
+    if (current <= 3) {
         // 当前页在前3页，显示前5页
         pages.push(1, 2, 3, 4, 5);
         pages.push('...');
         pages.push(props.totalPages);
-    } else if (currentPage.value >= props.totalPages - 2) {
+    } else if (current >= props.totalPages - 2) {
         // 当前页在后3页，显示后5页
         pages.push(1);
         pages.push('...');
@@ -73,33 +72,31 @@ const visiblePages = computed(() => {
         // 当前页在中间，显示当前页及其前后2页
         pages.push(1);
         pages.push('...');
-        pages.push(currentPage.value - 2, currentPage.value - 1, currentPage.value, currentPage.value + 1, currentPage.value + 2);
+        pages.push(current - 2, current - 1, current, current + 1, current + 2);
         pages.push('...');
         pages.push(props.totalPages);
     }
     return pages;
 });
+
 // 上一页
 const prevPage = () => {
-    if (currentPage.value > 1) {
-        currentPage.value--;
-        emits('pageChanged', currentPage.value);
+    if (props.currentPage > 1) {
+        emits('pageChanged', props.currentPage - 1);
     }
 };
 
 // 下一页
 const nextPage = () => {
-    if (currentPage.value < props.totalPages) {
-        currentPage.value++;
-        emits('pageChanged', currentPage.value);
+    if (props.currentPage < props.totalPages) {
+        emits('pageChanged', props.currentPage + 1);
     }
 };
 
 // 跳转到指定页
 const goToPage = (page: number|string) => {
     if (typeof page === 'number' && page >= 1 && page <= props.totalPages) {
-        currentPage.value = page;
-        emits('pageChanged', currentPage.value);
+        emits('pageChanged', page);
     }
 };
 </script>

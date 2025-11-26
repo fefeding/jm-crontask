@@ -1,59 +1,119 @@
 <template>
     <div style="width: 80%;">
-        <el-form ref="form" v-model="taskData" label-width="80px">
-            <el-form-item label="名称">
-                <el-input v-model="taskData.name" minlength="4" maxlength="32" placeholder="请输入任务名称" show-word-limit></el-input>
-            </el-form-item>
-            <el-form-item label="执行方式">
-                <el-col :span="4">
-                    <el-select v-model="taskData.timeSize" placeholder="请选择">
-                        <el-option
-                        v-for="item in TimeTypeOptions"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                        :disabled="item.value==5||item.value==6">
-                        </el-option>
-                    </el-select>
-                </el-col>
-                <el-col class="line" :span="1">
-                    &nbsp;
-                </el-col>
-                <el-col :span="15">
-                    <el-date-picker v-if="taskData.timeSize == 0"
-                        v-model="taskData.timeValue"
-                        value-format="yyyy-MM-dd HH:mm:ss"
-                        type="datetime"
-                         placeholder="选择任务执行时间">
-                    </el-date-picker>
-                    <el-time-picker v-else-if="taskData.timeSize == 4" placeholder="选择每天执行时间" v-model="taskData.timeValue"
-                        value-format="HH:mm:ss"></el-time-picker>
-                    <div v-else-if="taskData.timeSize == 7" style="display:flex">
-                        <el-popover v-model="cronPopover">
-                            <vue3Cron @change="changeCron" @close="cronPopover=false" :cron-value="taskData.timeValue"></vue3Cron>
-                            <template #reference>
-                                <el-input
-                                  @focus="cronPopover=true"
-                                  v-model="taskData.timeValue"
-                                  placeholder="* * * * * ? *"
-                                ></el-input>
-                              </template>
-                        </el-popover>
-                        <span>(秒 分 时 日 月 周 年)</span>
-                        <span style="color:red;margin-left:6px">整时整分需要将前面的秒或者分设为0</span>
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">名称</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="name" 
+                    v-model="taskData.name" 
+                    minlength="4" 
+                    maxlength="32" 
+                    placeholder="请输入任务名称"
+                    required
+                >
+                <div class="form-text">{{ taskData.name?.length || 0 }}/32 字符</div>
+            </div>
+            
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">执行方式</label>
+                <div class="col-sm-10">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select v-model="taskData.timeSize" class="form-select">
+                                <option 
+                                    v-for="item in TimeTypeOptions"
+                                    :key="item.value"
+                                    :value="item.value"
+                                    :disabled="item.value==5||item.value==6">
+                                    {{ item.label }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <div v-if="taskData.timeSize == 0">
+                                <input 
+                                    type="datetime-local" 
+                                    class="form-control"
+                                    v-model="datetimeValue"
+                                >
+                            </div>
+                            <div v-else-if="taskData.timeSize == 4">
+                                <input 
+                                    type="time" 
+                                    class="form-control"
+                                    v-model="timeValue"
+                                >
+                            </div>
+                            <div v-else-if="taskData.timeSize == 7" class="d-flex flex-column">
+                                <div class="input-group mb-2">
+                                    <input 
+                                        type="text" 
+                                        class="form-control"
+                                        v-model="taskData.timeValue"
+                                        placeholder="* * * * * ? *"
+                                        @focus="showCronPopover=true"
+                                    >
+                                    <button class="btn btn-outline-secondary" type="button" @click="showCronPopover = !showCronPopover">
+                                        <i class="bi bi-calendar3"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">(秒 分 时 日 月 周 年)</small>
+                                <small class="text-danger">整时整分需要将前面的秒或者分设为0</small>
+                                
+                                <!-- Cron 表达式选择器 -->
+                                <div v-if="showCronPopover" class="card mt-2">
+                                    <div class="card-body">
+                                        <vue3Cron @change="changeCron" @close="showCronPopover=false" :cron-value="taskData.timeValue"></vue3Cron>
+                                    </div>
+                                </div>
+                            </div>
+                            <input 
+                                v-else 
+                                type="number" 
+                                class="form-control"
+                                v-model.number="taskData.timeValue" 
+                                :min="1" 
+                                :max="100000" 
+                                placeholder="执行间隔"
+                            >
+                        </div>
                     </div>
-                    <el-input-number v-else v-model="taskData.timeValue" :min="1" :max="100000" aria-label="执行隔间"></el-input-number>
-                </el-col>
-            </el-form-item>
-            <el-form-item label="超时时间(秒)">
-                <el-input-number v-model="taskData.timeout" :min="0" :max="100000" placeholder="任务执行超时时间"></el-input-number>
-            </el-form-item>
-            <el-form-item label="关注人">
-                <el-input v-model="taskData.watcher" maxlength="64" placeholder="输入关注员工ID,用|分隔" show-word-limit></el-input>
-            </el-form-item>
-            <el-form-item label="脚本">
-                <v-ace-editor
-                v-model:value="taskScript" 
+                </div>
+            </div>
+            
+            <div class="mb-3 row">
+                <label class="col-sm-2 col-form-label">超时时间(秒)</label>
+                <div class="col-sm-10">
+                    <input 
+                        type="number" 
+                        class="form-control"
+                        v-model.number="taskData.timeout" 
+                        :min="0" 
+                        :max="100000" 
+                        placeholder="任务执行超时时间"
+                    >
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="watcher" class="form-label">关注人</label>
+                <input 
+                    type="text" 
+                    class="form-control" 
+                    id="watcher" 
+                    v-model="taskData.watcher" 
+                    maxlength="64" 
+                    placeholder="输入关注员工ID,用|分隔"
+                >
+                <div class="form-text">{{ taskData.watcher?.length || 0 }}/64 字符</div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">脚本</label>
+                <VAceEditor
+                    v-model:value="taskScript" 
                     :readonly="false"
                     :wrap="false"
                     :print-margin="false"
@@ -61,18 +121,16 @@
                     theme="chrome"
                     style="height:800px; width:100%;"
                 />
-            </el-form-item>
-            <el-form-item>
-                <el-button @click="$router.go(-1)">取消</el-button>
-                <el-button type="primary" @click="save()">保存</el-button>
-            </el-form-item>
-        </el-form>
+            </div>
+            
+            <div class="mb-3">
+                <button type="button" class="btn btn-secondary me-2" @click="$router.go(-1)">取消</button>
+                <button type="button" class="btn btn-primary" @click="save()">保存</button>
+            </div>
+        </form>
     </div>
 </template>
 <style scoped>
-.el-table .unique-row {
-    background: #f0f9eb;
-}
 .vue-codemirror {
     text-align: left;
     line-height: 22px;
@@ -84,6 +142,16 @@
 
 .jsoneditor{
     border: 1px solid #ccc;
+}
+
+/* 自定义 Bootstrap 样式调整 */
+.form-label {
+    font-weight: 600;
+}
+
+.card {
+    z-index: 1000;
+    position: relative;
 }
 </style>
 <script setup lang="ts">
@@ -100,11 +168,14 @@ ace.config.setModuleUrl('ace/theme/chrome', themeChromeUrl);
 import vue3Cron from 'no-vue3-cron';
 import 'no-vue3-cron/lib/noVue3Cron.css'; // 引入样式
 
-import { computed, onMounted, ref } from 'vue';
-import { useRouter, type Router } from 'vue-router';
-import { ElMessageBox ,ElMessage } from 'element-plus';
+import { computed, getCurrentInstance, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import {TaskState, TaskTimeSize} from '../../../base/taskConst';
 import { request } from '../../../service/base';
+import { type ToastType } from '@/components/toast/index';
+
+const instance = getCurrentInstance();
+const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastType;
 
     const props = defineProps({
         id: {
@@ -126,28 +197,52 @@ import { request } from '../../../service/base';
     });
     // 任务脚本
     const taskScript = ref('');
-    const cronPopover = ref(false);
+    const showCronPopover = ref(false);
     const router = useRouter();
     
 
     // 任务执行规则值，数字和时间之间切换可能会报错。这里做下处理
-    const timeValue = computed(()=>{        
-        if(taskData.value.timeSize === TaskTimeSize.day || taskData.value.timeSize === TaskTimeSize.single) {
-            
-            if(/^\d+$/.test(taskData.value.timeValue)) {
-                taskData.value.timeValue = '';
+    const timeValue = computed({        
+        get() {
+            if(taskData.value.timeSize === TaskTimeSize.day || taskData.value.timeSize === TaskTimeSize.single) {
+                
+                if(/^\d+$/.test(taskData.value.timeValue)) {
+                    taskData.value.timeValue = '';
+                }
+                else if(taskData.value.timeSize === TaskTimeSize.single && !/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(taskData.value.timeValue)) {
+                    taskData.value.timeValue = '';
+                }
+                else if(taskData.value.timeSize === TaskTimeSize.day && !/^\d{2}:\d{2}:\d{2}$/.test(taskData.value.timeValue)) {
+                    taskData.value.timeValue = '';
+                }
             }
-            else if(taskData.value.timeSize === TaskTimeSize.single && !/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(taskData.value.timeValue)) {
-                taskData.value.timeValue = '';
+            else if(taskData.value.timeSize !== TaskTimeSize.crontab && !/^\d+$/.test(taskData.value.timeValue)) {
+                taskData.value.timeValue = '1';
             }
-            else if(taskData.value.timeSize === TaskTimeSize.day && !/^\d{2}:\d{2}:\d{2}$/.test(taskData.value.timeValue)) {
+            return taskData.value.timeValue;
+        },
+        set(value: string) {
+            taskData.value.timeValue = value;
+        }
+    });
+
+    // 处理日期时间格式
+    const datetimeValue = computed({
+        get() {
+            // 将 yyyy-MM-dd HH:mm:ss 转换为 datetime-local 格式 (yyyy-MM-ddTHH:mm)
+            if (taskData.value.timeValue) {
+                return taskData.value.timeValue.replace(' ', 'T').substring(0, 16);
+            }
+            return '';
+        },
+        set(value: string) {
+            // 将 datetime-local 格式转换回 yyyy-MM-dd HH:mm:ss
+            if (value) {
+                taskData.value.timeValue = value.replace('T', ' ') + ':00';
+            } else {
                 taskData.value.timeValue = '';
             }
         }
-        else if(taskData.value.timeSize !== TaskTimeSize.crontab && !/^\d+$/.test(taskData.value.timeValue)) {
-            taskData.value.timeValue = '1';
-        }
-        return taskData.value.timeValue;
     });
 
     onMounted(()=>{  
@@ -180,18 +275,18 @@ import { request } from '../../../service/base';
 
     async function save() {
         if(!taskData.value.timeValue) {
-            ElMessage.error('请输入正确的执行时间');
+            $toast?.error('请输入正确的执行时间');
             return false;
         }
         // 定时规则表达式校验
         if(taskData.value.timeSize === TaskTimeSize.crontab && (taskData.value.timeValue.split(' ').length > 7 || taskData.value.timeValue.split(' ').length < 5)) {
-            ElMessage.error('请输入正确的定时规则表达式！');
+            $toast?.error('请输入正确的定时规则表达式！');
             return false;
         }
         taskData.value.script = taskScript.value || '';
         const rsp = await request('/api/task/save', taskData.value);
         if(rsp.ret === 0) {
-            ElMessage.success('保存成功');   
+            $toast?.success('保存成功');   
             query(rsp.data.id);         
         }
     }

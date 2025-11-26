@@ -1,110 +1,116 @@
 <template>
   <div>
-        <el-row class="clear">
-          <el-form :inline="true">
-            <el-form-item label="任务ID">
-                <el-input class="search-input" clearable v-model="taskQueryRequest.taskId" placeholder="任务ID"></el-input>
-            </el-form-item>
-             <el-form-item label="状态">
-                <el-select  v-model="taskQueryRequest.status" placeholder="状态" style="width: 200px; margin-right: 20px">
-                  <el-option key="0"
-                            label="所有"
-                            :value="0">
-                  </el-option>
-                  <el-option key="1"
-                            label="运行中"
-                            :value="1">
-                  </el-option>
-                  <el-option key="2"
-                            label="成功"
-                            :value="2">
-                  </el-option>
-                  <el-option key="3"
-                            label="失败"
-                            :value="3">
-                  </el-option>
-                  <el-option key="4"
-                            label="超时"
-                            :value="4">
-                  </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button class="search-button" type="primary" @click="()=>{taskQueryRequest.page=1;query()}">查询</el-button>
+    <!-- 确认对话框 -->
+    <Modal 
+      v-if="confirmModal"
+      :title="confirmModal.title"
+      :confirmButton="{ show: true, text: '确认' }"
+      :closeButton="{ show: true, text: '取消' }"
+      @onConfirm="confirmModal.confirmCallback"
+      @onClose="confirmModal.cancelCallback"
+    >
+      {{ confirmModal.message }}
+    </Modal>
 
-            </el-form-item>
-        </el-form>
-        </el-row>
-      <el-table
-        :data="instanceData.data"
-        element-loading-text="拼命加载中"
-        border
-        style="width: 100%;">
-        <el-table-column
-          prop="taskName"
-          label="名称">
-        </el-table-column>
-        <el-table-column
-          prop="taskId"
-          label="任务ID">
-        </el-table-column>
-        <el-table-column
-          prop="status"
-          label="状态"
-          width="100">
-          <template #default="scope">
-            {{ getTaskStatusName(scope.row.status)}}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="execServer"
-          label="服务器">
-        </el-table-column>
-        <el-table-column
-          prop="execStartTime"
-          label="执行起始时间">
-        </el-table-column>
-        <el-table-column
-          prop="execEndTime"
-          label="执行结束时间">
-        </el-table-column>
-        <el-table-column
-            prop="updater"
-            label="最近修改人">
-            <template #default="scope">
-                <StaffUserName :id="scope.row.updater" domain=""
-        style="max-height: 30px;"></StaffUserName>
-              </template>
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          width="200">
-          <template #default="scope">
-            <el-button type="success" size="small" @click="router.push({name: 'task_log', query: {id:scope.row.id}})">查看日志</el-button>
-            <el-button type="error" v-if="scope.row.status == 1" size="small" @click="setFailed(scope.row.id)">作废</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <div style="margin-top: 16px">
-          <el-pagination
-              :page-size="taskQueryRequest.size"
-              :current-page.sync="taskQueryRequest.page"
-              @current-change="query"
-              layout="prev, next, jumper"
-              :total="instanceData.total">
-          </el-pagination>
+    <div class="row mb-3">
+      <div class="col">
+        <form class="row g-3" @submit.prevent="() => {taskQueryRequest.page=1; query()}">
+          <div class="col-auto">
+            <label for="taskId" class="form-label">任务ID</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="taskId" 
+              v-model="taskQueryRequest.taskId" 
+              placeholder="任务ID"
+            >
+          </div>
+          <div class="col-auto">
+            <label for="status" class="form-label">状态</label>
+            <select 
+              class="form-select" 
+              id="status" 
+              v-model="taskQueryRequest.status"
+              style="width: 200px;"
+            >
+              <option value="0">所有</option>
+              <option value="1">运行中</option>
+              <option value="2">成功</option>
+              <option value="3">失败</option>
+              <option value="4">超时</option>
+            </select>
+          </div>
+          <div class="col-auto d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">查询</button>
+          </div>
+        </form>
       </div>
+    </div>
+
+    <DataGrid
+      :data="instanceData.data"
+      :columns="tableColumns"
+      :currentPage="taskQueryRequest.page"
+      :totalPages="getTotalPages()"
+      :isLoading="loading"
+      @pageChanged="pageChanged"
+    >
+      <template #status="props">
+        <span class="badge" :class="getStatusBadgeClass(props.row.status)">
+          {{ getTaskStatusName(props.row.status) }}
+        </span>
+      </template>
+      <template #updater="props">
+        <StaffUserName :id="props.row.updater" domain="" style="max-height: 30px;"></StaffUserName>
+      </template>
+      <template #actions="props">
+        <div class="btn-group btn-group-sm" role="group">
+          <button 
+            type="button" 
+            class="btn btn-info"
+            @click="router.push({name: 'task_log', query: {id: props.row.id}})"
+          >
+            查看日志
+          </button>
+          <button 
+            v-if="props.row.status == 1" 
+            type="button" 
+            class="btn btn-danger"
+            @click="setFailed(props.row.id)"
+          >
+            作废
+          </button>
+        </div>
+      </template>
+    </DataGrid>
   </div>
 </template>
 <style>
 </style>
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, getCurrentInstance, onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
-import { ElMessageBox ,ElMessage } from 'element-plus';
-import {TaskState, TaskTimeSize, TaskStatus} from '../../../base/taskConst';
+import {TaskStatus} from '../../../base/taskConst';
 import { request } from '../../../service/base';
 import StaffUserName from './staffUserName.vue';
+import { type ToastType } from '@/components/toast/index';
+import Modal from '@/components/modal/index.vue';
+
+const instance = getCurrentInstance();
+const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastType;
+const confirmModal = ref();
+
+// 表格列定义
+const tableColumns = computed(() => [
+  { name: 'taskName', text: '名称' },
+  { name: 'taskId', text: '任务ID' },
+  { name: 'status', text: '状态' },
+  { name: 'execServer', text: '服务器' },
+  { name: 'execStartTime', text: '执行起始时间' },
+  { name: 'execEndTime', text: '执行结束时间' },
+  { name: 'updater', text: '最近修改人' },
+  { name: 'actions', text: '操作' }
+]);
   const router = useRouter();
   const taskQueryRequest = ref({
         taskId: "",
@@ -117,6 +123,7 @@ import StaffUserName from './staffUserName.vue';
         data: [],
         total: 0
     } as any);
+  const loading = ref(false);
 
     onMounted(async () => {    
         taskQueryRequest.value.taskId = router.currentRoute.value.query.taskId as string || '';
@@ -125,32 +132,74 @@ import StaffUserName from './staffUserName.vue';
 
     // 查询任务配置
     async function query() {
-        const data = await request('/api/instance/query', taskQueryRequest.value,);
-        console.log(data);
-        if(data.ret == 0) {
-            instanceData.value = data;
-        }
-        else {
-          ElMessage.error(data.msg);
+        loading.value = true;
+        try {
+            const data = await request('/api/instance/query', taskQueryRequest.value,);
+            console.log(data);
+            if(data.ret == 0) {
+                instanceData.value = data;
+            }
+            else {
+              $toast?.error(data.msg);
+            }
+        } finally {
+            loading.value = false;
         }
     }
 
     // 废弃实例
     async function setFailed(id: number) {
-        if(await ElMessageBox.confirm(`确定要废弃当前实例吗？，已经在运行时不会起作用，这里主要用于清理异常数据。`) != 'confirm') return;
-
-        const data = await request('/api/instance/updateStatus', {
-                id: id,
-                status: TaskStatus.failed
+        const confirmed = await new Promise((resolve) => {
+            const modalData = ref({
+                title: '确认作废',
+                message: '确定要废弃当前实例吗？，已经在运行时不会起作用，这里主要用于清理异常数据。',
+                confirmCallback: () => resolve(true),
+                cancelCallback: () => resolve(false)
+            });
+            confirmModal.value = modalData;
         });
-        console.log(data);
-        if(data.ret == 0) {
-          ElMessage.success('操作成功');
-          query();
+
+        if (!confirmed) return;
+
+        loading.value = true;
+        try {
+            const data = await request('/api/instance/updateStatus', {
+                    id: id,
+                    status: TaskStatus.failed
+            });
+            console.log(data);
+            if(data.ret == 0) {
+              $toast?.success('操作成功');
+              query();
+            }
+            else {
+              $toast?.error('操作失败');
+            }
+        } finally {
+            loading.value = false;
         }
-        else {
-          ElMessage.error('操作失败');
+    }
+
+    // 获取状态徽章样式
+    function getStatusBadgeClass(status: number): string {
+        switch(status) {
+            case TaskStatus.init: {
+                return 'bg-secondary';
+            }
+            case TaskStatus.running: {
+                return 'bg-primary';
+            }
+            case TaskStatus.success: {
+                return 'bg-success';
+            }
+            case TaskStatus.failed: {
+                return 'bg-danger';
+            }
+            case TaskStatus.timeout: {
+                return 'bg-warning';
+            }
         }
+        return 'bg-secondary';
     }
 
     // 获取执行方式文案
@@ -173,5 +222,15 @@ import StaffUserName from './staffUserName.vue';
             }
         }
         return '';
+    }
+
+    // 分页相关函数
+    function pageChanged(page: number) {
+        taskQueryRequest.value.page = page;
+        query();
+    }
+
+    function getTotalPages(): number {
+        return Math.ceil((instanceData.value.total || 0) / taskQueryRequest.value.size);
     }
 </script>

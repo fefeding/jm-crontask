@@ -5,28 +5,49 @@
         </p>
     </div>
 </template>
-<style>
+<style scoped>
 .log-container {
     background: #000;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
-    padding: 4px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 1rem;
     min-height: 800px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
 }
 
 .log-container > p {
-    margin: 4px;
+    margin: 0.25rem 0;
     padding: 0;
-    word-wrap:break-word;
-    word-break:normal; 
-    color: rgb(235, 221, 221);
+    word-wrap: break-word;
+    word-break: normal; 
+    color: #ebe7e7;
+    line-height: 1.4;
+}
+
+/* 添加一些日志级别的颜色 */
+.log-error {
+    color: #ff6b6b;
+}
+
+.log-warning {
+    color: #ffd93d;
+}
+
+.log-info {
+    color: #74c0fc;
+}
+
+.log-success {
+    color: #51cf66;
 }
 </style>
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
-import { ElMessageBox ,ElMessage } from 'element-plus';
-import {TaskState, TaskTimeSize, TaskStatus} from '../../../base/taskConst';
+import {TaskStatus} from '../../../base/taskConst';
 import { request } from '../../../service/base';
     const router = useRouter();
     const instance = ref({

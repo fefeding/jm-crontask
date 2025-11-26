@@ -13,7 +13,6 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.2",
     "@fefeding/common": "^1.0.58",
     "@fefeding/eventemitter": "^1.0.4",
     "@fefeding/utils": "^1.0.39",
@@ -24,7 +23,6 @@
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "dayjs": "^1.11.19",
-    "element-plus": "^2.11.8",
     "exceljs": "^4.4.0",
     "js-cookie": "^3.0.5",
     "jszip": "^3.10.1",

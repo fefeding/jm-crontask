@@ -68,8 +68,56 @@
         isFullScreen: {
             type: Boolean,
             default: false
-        }
+        },
+        teleport: {
+            type: [Boolean, String],
+            default: false // true表示传送到body，也可传具体选择器如"#app"
+        },
     });
+    
+    const originalParent = ref<Node | null>(null); // 保存原始父节点
+    const targetContainer = ref<HTMLElement | null>(null); // 目标容器（传送目的地）
+
+    // 计算传送目标容器
+    const getTargetContainer = () => {
+    if (!props.teleport) return null; // 不启用传送
+    
+    if (typeof props.teleport === 'string') {
+        // 传送目标为指定选择器（如"#app"）
+        return document.querySelector<HTMLElement>(props.teleport) || null;
+    } else {
+        // 默认为body
+        return document.body;
+    }
+    };
+    // 核心：根据teleport属性传送模态框
+    const teleportModal = () => {
+        if (!modalContainer.value) return;
+        
+        // 获取目标容器
+        const target = getTargetContainer();
+        if (!target) return;
+        
+        // 保存原始父节点（仅第一次传送时保存）
+        if (!originalParent.value) {
+            originalParent.value = modalContainer.value.parentNode;
+        }
+        
+        // 如果不在目标容器中，则移动过去
+        if (modalContainer.value.parentNode !== target) {
+            target.appendChild(modalContainer.value);
+        }
+        };
+
+        // 恢复模态框到原始位置（组件卸载时）
+        const restoreModal = () => {
+        if (modalContainer.value && originalParent.value && props.teleport) {
+            // 避免重复添加（如果已经在原始父节点则不操作）
+            if (!originalParent.value.contains(modalContainer.value)) {
+            originalParent.value.appendChild(modalContainer.value);
+            }
+        }
+    };
 
     const emits = defineEmits(['onConfirm', 'onClose', 'onCancel', 'hidden']);
   
@@ -111,6 +159,9 @@
 
     function ModalShow(){
         console.log(`Modal ${modalId} shown`);
+        if (props.teleport) {
+            teleportModal(); // 启用传送时才执行
+        }
         modalShow.value = true;
     }
     
@@ -162,6 +213,7 @@
         if (modal) {
             modal.dispose();
         }
+        restoreModal();
     });
   
     // 暴露方法供全局调用
@@ -176,5 +228,6 @@
 <style scoped>
 .modal-dialog {
     z-index: var(--bs-modal-zindex);
+    max-width:none !important;
 }
 </style>
