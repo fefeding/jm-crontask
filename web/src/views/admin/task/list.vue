@@ -107,7 +107,6 @@ import { type ToastType } from '@/components/toast/index';
 
 const instance = getCurrentInstance();
 const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastType;
-const confirmModal = ref();
 
 // 表格列定义
 const tableColumns = computed(() => [
@@ -171,16 +170,8 @@ const tableColumns = computed(() => [
 
     // 设置状态
     async function setState(id: number, state: number, actionName: string) {
-        confirmModal.value = ref();
-        const confirmed = await new Promise((resolve) => {
-            const modalData = ref({
-                title: `确认${actionName}`,
-                message: `确定要${actionName}当前任务吗？`,
-                confirmCallback: () => resolve(true),
-                cancelCallback: () => resolve(false)
-            });
-            confirmModal.value = modalData;
-        });
+        
+        const confirmed = confirm(`确定要${actionName}当前任务吗？`);
 
         if (!confirmed) return;
 
@@ -205,16 +196,7 @@ const tableColumns = computed(() => [
 
     // 立即执行一个任务
     async function runTask(id: number) {
-        const confirmed = await new Promise((resolve) => {
-            const modalData = ref({
-                title: '确认执行',
-                message: '如果有实例执行，会导致重复执行。确定立即执行吗？',
-                confirmCallback: () => resolve(true),
-                cancelCallback: () => resolve(false)
-            });
-            confirmModal.value = modalData;
-        });
-
+        const confirmed = confirm(`如果有实例执行，会导致重复执行。确定立即执行吗？`);            
         if (!confirmed) return;
 
         loading.value = true;
