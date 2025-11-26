@@ -1,16 +1,22 @@
 <script type="text/template" id="__INITIAL_STATE__">
     {{ data | dump | safe }}
-  </script>
+</script>
+<script type="text/template" id="__DEFAULTINITIAL_STATE__">
+  {{ __DEFAULTINITIAL_STATE__ }}
+</script>
 <script>
-  var __INITIAL_STATE__ = { "config": { "prefix": "" },  "title": "" };
-  try { 
-    (function(){
-      const tag = document.getElementById('__INITIAL_STATE__');      
-      __INITIAL_STATE__ = JSON.parse(tag.innerHTML);
-    })();
+  function __get_templateJson(id) {
+    try { 
+        var tag = document.getElementById(id);
+        var obj = JSON.parse(tag.innerHTML);
+        return obj;
+    }
+    catch (e) {    
+      return null;
+    }
   }
-  catch (e) {
-  }
+  var __INITIAL_STATE__ = __get_templateJson('__INITIAL_STATE__');
+  if(!__INITIAL_STATE__) __INITIAL_STATE__ = __get_templateJson('__DEFAULTINITIAL_STATE__');
   // 动态加载入口
   function __vitejs_load_entry(url, type) {        
         if(!url) return;

@@ -10,6 +10,7 @@ export interface SysConfigState {
     url?: string;
     config?: {
         prefix?: string;
+        apiUrl?: string;
         adapter?: string;
     };
     sso?: any;

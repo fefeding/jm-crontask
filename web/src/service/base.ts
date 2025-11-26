@@ -6,7 +6,8 @@ import config from '../base/config';
 
 export function getRequestUrl(api: string) {
     if(/^(http(s)?:)?\/\//.test(api)) return api;
-    return `${location.protocol}//${location.hostname}:${location.port}${config.prefix}${api}`;
+    const apiUrl = config.apiUrl || `${location.protocol}//${location.hostname}${[80,443].includes(Number(location.port))?'':(':'+location.port)}`;
+    return `${apiUrl.trim()}${config.prefix}${api}`;
 }
 
 export async function requestServer(url: string, data?: any, option?: AxiosRequestConfig) {

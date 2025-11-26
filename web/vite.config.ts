@@ -22,12 +22,19 @@ console.log('.env', envPath, process.env);
 const urlPrefix = process.env.PREFIX ? `/${process.env.PREFIX}` : '';
 console.log(urlPrefix);
 
+const defaultInitState = {
+    "config": {"prefix": urlPrefix, "apiUrl": process.env.API_URL||""},
+    "sso": {"baseUrl":process.env.SSO_URL||'',"appId":process.env.APP_ID||2},
+    "title": process.env.TITLE
+};
+
 const viewDir = path.resolve(__dirname, './view');
 // https://vitejs.dev/config/
 const config = defineConfig({
     plugins: [
         vue() as PluginOption, 
         vueJsx() as PluginOption,
+        // @ts-ignore
         CopyPlugin({
             patterns: [
                 // {
@@ -44,6 +51,7 @@ const config = defineConfig({
             variables: {
                 prefix: '', // 构建时，去掉这种prefix前缀，vite会处理依赖关系
                 viteTarget: '',// 构建之后的不加base
+                __DEFAULTINITIAL_STATE__: JSON.stringify(defaultInitState),
             }
         }),
         {
@@ -55,6 +63,8 @@ const config = defineConfig({
                     html = html.replace(
                         /<script\s*type="module"\s*[^\>]*\s*src="([^"]+)"\s*>\s*<\/script>/g, (match, src) => {
                                 if(!src || /^(http(s)?:)?\/\//i.test(src)) return match;
+                                console.log('replace script', src, urlPrefix);
+
                                 if(src.startsWith(urlPrefix)) src = src.replace(urlPrefix, '');
                                 return "<script>" +
                                 ` window.__vitejs_load_entry && window.__vitejs_load_entry('${src}', 'script');` +
@@ -64,6 +74,8 @@ const config = defineConfig({
                     // 移除所有 <link rel="modulepreload"> 标签（预加载脚本）
                     html = html.replace(/<link\s*rel="modulepreload"\s*[^\>]*\s*href="([^"]+)"\s*\/?>/g, (match, href) => {
                             if(!href || /^(http(s)?:)?\/\//i.test(href)) return match;
+                            console.log('replace modulepreload', href, urlPrefix);
+
                             if(href.startsWith(urlPrefix)) href = href.replace(urlPrefix, '');
                             return "<script>" +
                             ` window.__vitejs_load_entry && window.__vitejs_load_entry('${href}', 'modulepreload');` +
@@ -73,6 +85,8 @@ const config = defineConfig({
                     // 移除所有 <link rel="stylesheet"> 标签（如果不需要 Vite 处理的 CSS）
                     html = html.replace(/<link\s*rel="stylesheet"\s*[^\>]*\s*href="([^"]+)"\s*\/?>/g, (match, href) => {
                             if(!href || /^(http(s)?:)?\/\//i.test(href)) return match;
+                            console.log('replace stylesheet', href, urlPrefix);
+
                             if(href.startsWith(urlPrefix)) href = href.replace(urlPrefix, '');
                             return "<script>" +
                             ` window.__vitejs_load_entry && window.__vitejs_load_entry('${href}', 'stylesheet');` +
@@ -81,6 +95,8 @@ const config = defineConfig({
                     );
                     html = html.replace(/<link\s*rel="icon"\s*[^\>]*\s*href="([^"]+)"\s*\/?>/g, (match, href) => {
                             if(!href || /^(http(s)?:)?\/\//i.test(href)) return match;
+                            console.log('replace icon', href, urlPrefix);
+                            
                             if(href.startsWith(urlPrefix)) href = href.replace(urlPrefix, '');
                             return "<script>" +
                             ` window.__vitejs_load_entry && window.__vitejs_load_entry('${href}', 'icon');` +

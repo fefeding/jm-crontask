@@ -46,26 +46,13 @@ interface Window {
     __INITIAL_STATE__: {
         config: {
             prefix?: string;
+            apiUrl?: string;
             adapter?: string;
             title?: string;
             requestHost?: any;
-            permissionConfig?: {
-                open: boolean;
-                permissionSystemOrigin?: string;
-                roleIdWhiteList?: number[];
-                uniqueIdWhiteList?: string[];
-                requirePermissionPaths?: string[];
-                applyPermissionUrl?: string;
-            };
         };
         session: any;
-        jvCommon: {
-            env: string;
-            jvAppId: number;
-        };
         isManager: boolean;
         loginUser: UserInfo;
-
-        jvSessionToken: string;
     };
 }
