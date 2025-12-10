@@ -10,14 +10,18 @@ export function getRequestUrl(api: string) {
     return `${apiUrl.trim()}${config.prefix}${api}`;
 }
 
-export async function requestServer(url: string, data?: any, option?: AxiosRequestConfig) {
+export async function requestServer(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) {
+    if(typeof url === 'object') {
+        option = url;
+        url = url.url?.toString() || '';
+    }
     url = getRequestUrl(url);
     const res = await requestHelper.request(url, data, option);
     return res;
 }
 
 // 请求服务
-export async function request<T = any>(url: string, data?: any, option?: AxiosRequestConfig) {    
+export async function request<T = any>(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) { 
     const res = await requestServer(url, data, option);
     if(res?.data.ret === 50001) {
         console.error('登陆态失效，请重新登陆后再试');
