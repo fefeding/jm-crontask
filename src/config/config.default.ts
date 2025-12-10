@@ -70,6 +70,10 @@ export default (appInfo: MidwayAppInfo) => {
                 // Headers?: Headers;
             },
         },
+        // 做为任务调度中心时的配置
+        master: {
+            node: process.env.TASK_NODE !== '0' && process.env.TASK_NODE !== 'false', //是否做为节点执行任务
+        }
     } as MidwayConfig;
     return config;
 };

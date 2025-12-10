@@ -1,4 +1,4 @@
-import { Autoload,Provide, Scope, ScopeEnum, Init, Inject } from '@midwayjs/core';
+import { Autoload,Provide, Scope, ScopeEnum, Init, Inject, Config } from '@midwayjs/core';
 import { QueryRunner } from 'typeorm';
 import * as moment from 'moment';
 import * as ip from 'ip';
@@ -13,6 +13,8 @@ import TaskLockService from '../taskLock';
 @Scope(ScopeEnum.Singleton)
 export class RunnerService extends BaseService { 
 
+    @Config('master') masterConfig: {node: boolean};
+
     @Inject()
     taskService: TaskService;
 
@@ -24,6 +26,7 @@ export class RunnerService extends BaseService {
 
     @Init()
     async init() {
+        if(!this.masterConfig?.node) return;// 不作为任务节点运行
         this.master();// 启动主任务
 
         this.subTask();// 启动子任务
