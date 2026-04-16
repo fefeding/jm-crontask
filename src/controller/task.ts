@@ -60,7 +60,7 @@ export class TaskController extends BaseController {
         if(data.id > 0) {
             const task = await this.taskService.getById(data.id);
             if(!task) throw Error('任务不存在');
-            task.fromJSON(data);// 写入改变
+            task.fromJSON(fields);// 写入改变
             const res = await this.taskService.save(task);
             return res;
         }
