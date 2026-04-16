@@ -1,14 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
 {% include "./modules/header.tpl" %}
   <body>
-    <div id="app"></div>
-    <script>
-      window.__INITIAL_STATE__ = {{ data | dump | safe }}
+    <div id="app" class="min-vh-100"></div>
+    <script type="module" lang="ts" src="{{prefix}}/src/main.ts">      
     </script>
-    {% if env.NODE_ENV == 'local' %}
-      {% include "./modules/admin_footer.tpl" %}
-    {% else %}
-      <script type="module" lang="ts" src="/src/admin.ts">      
-      </script>
-    {% endif %}
   </body>
 </html>

@@ -10,59 +10,61 @@
         </div>
   
         <div class="box-inner">
-          <el-form class="form" @keyup.native.enter="submit">
+          <form class="form" @keyup.enter="submit">
             <h1>欢迎登录</h1>
-            <el-input
-                size="large"
-                ref="nameInput"
-                v-model="form.name"
-                placeholder="用户名"
-                autocomplete="true"
-                type="text"
-                maxlength="50"
-                clearable
-            >
-              <template #prepend>
-                <el-icon><User /></el-icon>
-              </template>
-            </el-input>
-            <el-input
-                size="large"
-                ref="passwordInput"
-                v-model="form.password"
-                :type="passwordType"
-                placeholder="密码"
-                name="password"
-                maxlength="50"
-                clearable
-            >
-              <template #prepend>
-                <el-icon @click="passwordTypeChange()"><Hide v-if="passwordType!=='password'" /><View v-else /></el-icon>
-              </template>
-            </el-input>
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="bi bi-person"></i>
+              </span>
+              <input
+                  ref="nameInput"
+                  v-model="form.name"
+                  type="text"
+                  class="form-control form-control-lg"
+                  placeholder="用户名"
+                  autocomplete="true"
+                  maxlength="50"
+              >
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text" @click="passwordTypeChange()" style="cursor: pointer;">
+                <i class="bi" :class="passwordType!=='password' ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </span>
+              <input
+                  ref="passwordInput"
+                  v-model="form.password"
+                  :type="passwordType"
+                  class="form-control form-control-lg"
+                  placeholder="密码"
+                  name="password"
+                  maxlength="50"
+              >
+            </div>
   
-            <el-button type="primary" :loading="form.loading" @click="submit" style="width: 100%;" size="large">
+            <button type="button" class="btn btn-primary btn-lg w-100" :disabled="form.loading" @click="submit">
+              <span v-if="form.loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
               登录
-            </el-button>
-          </el-form>
+            </button>
+          </form>
         </div>
       </div>
     </div>
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref, reactive } from 'vue'
-  import { ElMessage } from 'element-plus'
-  //import router from '../router';
+  import { defineComponent, getCurrentInstance, ref, reactive } from 'vue'
   import config from '@/base/config';
   import {sysConfig} from '@/domain/SysConfig';
   import loginLeftPng from '@/assets/login/left.jpg';
   import { login } from '@/service/login';
+  import toastPlugin, { type ToastType } from '@/components/toast/index';
   
   export default defineComponent({
     setup() {
     const systemTitle = sysConfig.title;
     const accountKey = 'school/login/account';
+    const instance = getCurrentInstance();
+    const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastType;
     
       const form = reactive({
         name: localStorage.getItem(accountKey) || '',
@@ -73,27 +75,23 @@
       const passwordTypeChange = () => {
         passwordType.value === '' ? passwordType.value = 'password' : passwordType.value = ''
       }
-      const passwordInput = ref({});
-      const nameInput = ref({});
+      const passwordInput = ref<HTMLInputElement | null>(null);
+      const nameInput = ref<HTMLInputElement | null>(null);
 
       const checkForm = () => {
         return new Promise((resolve, reject) => {
           if (!form.name) {
-            ElMessage.warning({
-              message: '用户名不能为空',
-              type: 'warning'
-            });
-            // @ts-ignore
-            nameInput.value.focus();
+            $toast?.warning('用户名不能为空');
+            if (nameInput.value) {
+              nameInput.value.focus();
+            }
             return;
           }
           if (!form.password) {
-            ElMessage.warning({
-              message: '密码不能为空',
-              type: 'warning'
-            })
-            // @ts-ignore
-            passwordInput.value.focus();
+            $toast?.warning('密码不能为空');
+            if (passwordInput.value) {
+              passwordInput.value.focus();
+            }
             return;
           }
           resolve(true)
@@ -105,19 +103,18 @@
           form.loading = true;
           const res = await login(form.name, form.password);
           if(res.ret === 0) {
-            ElMessage.success('登陆成功, 跳转中...');
+            $toast?.success('登陆成功, 跳转中...');
 
             // 缓存
             localStorage.setItem(accountKey, form.name);
 
             setTimeout(()=>{
                 const url = `${location.origin}${config.prefix}/admin/index`;
-                //const to = router.resolve('index');
                 location.replace(url);
             }, 1000);
           }
           else {
-            ElMessage.error(res.msg || '登陆失败');
+            $toast?.error(res.msg || '登陆失败');
           }
       }).finally(()=>{
         form.loading = false;
@@ -206,13 +203,12 @@
             margin-bottom: 20px;
             text-align: center;
           }
-          .el-input {
+          .input-group {
             margin-bottom: 20px;
           }
   
-          .password-icon {
+          .input-group-text {
             cursor: pointer;
-            color: #409eff;
           }
         }
   

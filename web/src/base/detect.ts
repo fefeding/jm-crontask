@@ -31,10 +31,7 @@ export const IS_MQQ = Boolean(VER_MQQ);
 // 微信版本号可能分4段，影响业务代码里使用semver比较版本号（会报错），如果业务需要4段版本号可以自己从ua里取
 const VER_WEIXIN =
     UA.match(/MicroMessenger\/([\d.]+)/i) &&
-    UA.match(/MicroMessenger\/([\d.]+)/i)?.[1]
-        .split('.')
-        .slice(0, 3)
-        .join('.');
+    UA.match(/MicroMessenger\/([\d.]+)/i)?.[1]?.split('.').slice(0, 3).join('.');
 export const IS_WEIXIN = Boolean(VER_WEIXIN);
 
 // 是否是开发者工具
@@ -96,17 +93,17 @@ const webkit = UA.match(/Web[kK]it[/]{0,1}([\d.]+)/),
     safari = webview || UA.match(/Version\/([\d.]+)([^S](Safari)|[^M]*(Mobile)[^S]*(Safari))/);
 
 if (android) {
-    (os.android = true), (os.version = android[2]);
+    (os.android = true), (os.version = android[2] as string);
 }
 if (iphone && !ipod) {
-    (os.ios = os.iphone = true), (os.version = iphone[2].replace(/_/g, '.'));
+    (os.ios = os.iphone = true), (os.version = iphone[2]?.replace(/_/g, '.') as string);
 }
 if (ipad) {
-    (os.ios = os.ipad = true), (os.version = ipad[2].replace(/_/g, '.'));
+    (os.ios = os.ipad = true), (os.version = ipad[2]?.replace(/_/g, '.') as string);
 }
 
 if (x5) {
-    (os.x5 = true), (os.version = x5[1]);
+    (os.x5 = true), (os.version = x5[1] as string);
 }
 
 let system = SYSTEM.UNKNOWN;

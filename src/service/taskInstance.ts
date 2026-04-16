@@ -5,7 +5,7 @@ import { QueryRunner, Repository } from 'typeorm';
 import * as path from 'path';
 import * as jsruntime from 'jm-jsruntime';
 import axios from 'axios';
-import { BaseModel } from '../base/base.model';
+import { BaseModelService } from '@cicctencent/midwayjs-base';
 
 import TaskConfigOrm from '../model/taskConfig';
 
@@ -18,7 +18,7 @@ import TaskService from './task';
  */
 @Provide()
 @Scope(ScopeEnum.Request, { allowDowngrade: true })
-export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
+export default class TaskInstanceService extends BaseModelService<TaskInstanceOrm> {
 
     @InjectEntityModel(TaskInstanceOrm)
     protected model: Repository<TaskInstanceOrm>;
@@ -87,15 +87,25 @@ export default class TaskInstanceService extends BaseModel<TaskInstanceOrm> {
      * @param db
      */
     async runTask(instance: TaskInstanceOrm) {
+        console.log('run task', instance);
         // const logger = this.ctx.logger;
         const logger = this.ctx.log;
         // 发布脚本中的console托管。记录日志
         const vconsole = {
+            object2String: (obj: any) => {
+                try {
+                    if(!obj) return obj;
+                    return typeof obj ==='object'?JSON.stringify(obj): obj.toString();
+                }
+                catch(e) {
+                    return obj.toString();
+                }
+            },
             write: (type, msgs)=>{
                 try {
                     //console.info(type, msgs);
                     msgs = msgs || [];
-                    const log =  `[${type}][${instance.id}] ${msgs.map((v)=>typeof v ==='object'? JSON.stringify(v):v).join('\n')}\n`;
+                    const log =  `[${type}][${instance.id}] ${msgs.map((v: any)=>vconsole.object2String(v)).join('\n')}\n`;
 
                     // if(instance.log?.length > 1000){
                     //     instance.log = instance.log.substring(0,1000) + `\n 更多日志请移步es查询包含[${instance.id}]`;

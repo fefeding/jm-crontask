@@ -1,7 +1,7 @@
 import { Provide, Scope, ScopeEnum } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, QueryRunner } from 'typeorm';
-import { BaseModel } from '../base/base.model';
+import { BaseModelService } from '@cicctencent/midwayjs-base';
 import TaskLockOrm from '../model/taskLock';
 import { TaskLockKeys } from '../model/taskConst';
 
@@ -10,7 +10,7 @@ import { TaskLockKeys } from '../model/taskConst';
  */
 @Provide()
 @Scope(ScopeEnum.Singleton)
-export default class TaskLockService extends BaseModel<TaskLockOrm> {
+export default class TaskLockService extends BaseModelService<TaskLockOrm> {
 
     @InjectEntityModel(TaskLockOrm)
     protected model: Repository<TaskLockOrm>;

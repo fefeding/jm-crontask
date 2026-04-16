@@ -1,8 +1,8 @@
-import { Autoload,Provide, Scope, ScopeEnum, Init, Inject } from '@midwayjs/core';
+import { Autoload,Provide, Scope, ScopeEnum, Init, Inject, Config } from '@midwayjs/core';
 import { QueryRunner } from 'typeorm';
 import * as moment from 'moment';
 import * as ip from 'ip';
-import { BaseService } from '../../base/base.service';
+import { BaseService } from '@cicctencent/midwayjs-base';
 import { TaskLockKeys, TaskStatus } from '../../model/taskConst';
 import TaskService from '../task';
 import InstanceService from '../taskInstance';
@@ -12,6 +12,8 @@ import TaskLockService from '../taskLock';
 @Provide()
 @Scope(ScopeEnum.Singleton)
 export class RunnerService extends BaseService { 
+
+    @Config('master') masterConfig: {node: boolean};
 
     @Inject()
     taskService: TaskService;
@@ -24,6 +26,7 @@ export class RunnerService extends BaseService {
 
     @Init()
     async init() {
+        if(!this.masterConfig?.node) return;// 不作为任务节点运行
         this.master();// 启动主任务
 
         this.subTask();// 启动子任务
@@ -35,11 +38,6 @@ export class RunnerService extends BaseService {
     // 任务分配主进程
     async master() {
         try {
-        //     const manager = await this.app.getApplicationContext().getAsync(TypeORMDataSourceManager) as any;
-        //     const dataSource = manager.getDataSource(manager.getDefaultDataSourceName()) as DataSource;
-        //     const queryInner = dataSource.createQueryRunner();
-            
-
             // 在锁的事务中执行
             await this.taskLockService.runLock(TaskLockKeys.master, async (queryInner: QueryRunner) => {
                 // 先停掉超时的任务

@@ -8,17 +8,21 @@ echo '清除web构建目录web/dist的所有文件'
 
 npm run build:vue
 
-cp -r ./web/dist/public/* ./src/public/
+echo '前端资源编译完成...'
 
-echo '生成view文件夹，并web/dist/view下的html复制过来'
-mkdir -p view
-# 多入口复制
-cp -rf ./web/dist/view/* ./view/
-
-rm -rf ./web/dist/*
-
-echo '前端资源打包完成...'
+echo '清空构建结果目录...'
+rm -rf ./dist/*
 
 npm run build:midway
 
 echo '后台服务构建完成...'
+
+# mkdir -p ./src/public
+# cp -r ./web/dist/public/* ./src/public/
+
+echo '生成dist目录下的web目录，并把web/dist下所有文件复制进去'
+mkdir -p ./dist/web
+# 多入口复制
+cp -rf ./web/dist/* ./dist/web/
+
+echo '构建完成'

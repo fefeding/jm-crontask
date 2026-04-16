@@ -17,8 +17,9 @@ run/
 *.tgz
 npminstall-debug.log
 src/public/
-view/
+/view
 .env
 layer/layer.zip
 npminstall-debug.log
 server.zip
+pnpm-lock.yaml

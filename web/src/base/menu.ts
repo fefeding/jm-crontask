@@ -1,33 +1,24 @@
 
-import config from '@/base/config';
 /**
  * 管理端菜单
  */
-export default {
-    home: {
+export default [
+   {
+    id: 'home',
       path: '/admin/home',
-      icon: 'HomeFilled',
+      icon: 'bi-speedometer2',
       name: '首页',
     },
-    school: {
+    {
+      id: 'task',
       path: '/admin/task/list',
-      icon: 'Tickets',
+      icon: 'bi-list-task',
       name: '任务管理',
     },
-    classroom: {
+    {
+      id: 'instance',
       path: '/admin/task/instance',
-      icon: 'StarFilled',
+      icon: 'bi-flower1',
       name: '运行实例',
     },  
-    // activity: {
-    //   path: '/admin/task/log',
-    //   icon: 'DocumentCopy',
-    //   name: '运行日志',
-    // },
-    // account: {
-    //   path: '/admin/account',
-    //   icon: 'User',
-    //   name: '帐号管理',
-    //   disabled: config.isManager,
-    // },
-  }
+]

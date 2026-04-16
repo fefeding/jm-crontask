@@ -24,8 +24,8 @@ export interface WatchCallBack {
 
 // 菜单项类型
 export type MenuItem = {
-    id?: number|string,
-    label: string,
+    id: string,
+    name: string,
     icon?: string,
     path?: string;
     /**

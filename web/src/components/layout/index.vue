@@ -1,34 +1,59 @@
-<template>
-  <div class="layout-container">
-    <el-container>
-      <!--<el-header>
-      </el-header>-->
-      <el-container>
-        <Aside v-if="!isFullContent" :menus="menus" />
-        <Content :isFullContent="isFullContent" />
-      </el-container>
-    </el-container>
+<template>  
+  <div class="app-container d-flex flex-column vh-100 overflow-hidden">
+    <!-- 头部组件 -->
+    <!-- <Header 
+      v-if="!isFullContent"
+      :sidebar-opened="sidebarOpened" 
+      @toggle-sidebar="toggleSidebar"
+    /> -->
+    
+    <div class="d-flex flex-fill overflow-hidden">
+      <!-- 侧边栏组件 -->
+      <Sidebar 
+        :menus="menus"
+        v-if="!isFullContent"
+        :opened="sidebarOpened" 
+        @toggle-sidebar="toggleSidebar"
+        @navigate="handleNavigate"
+      />
+      
+      <!-- 主内容区域 -->
+      <div class="flex-fill overflow-y-auto">
+        <MainContent :isFullContent="isFullContent" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import Aside from './components/Aside.vue';
-import Content from './components/Content.vue';
+
+//import Header from './components/Header.vue';
+import Sidebar from './components/Aside.vue';
+import MainContent from './components/Content.vue';
+
 import menus from '../../base/menu';
 
+// 侧边栏状态管理
+const sidebarOpened = ref(true);
+
+// 切换侧边栏显示状态
+const toggleSidebar = () => {
+  sidebarOpened.value = !sidebarOpened.value;
+};
+// 处理导航事件
+const handleNavigate = (path: string) => {
+  // 实际项目中可以使用vue-router进行导航
+  console.log('导航到:', path);
+};
+
 const router = useRouter();
-const isFullContent = computed(()=>{
-  return router.currentRoute.value.name === 'login' || router.currentRoute.value.name === 'logout';
+const isFullContent = computed<boolean>(()=>{
+  return !!(router.currentRoute?.value.name === 'login' || router.currentRoute?.value.name === 'logout' || router.currentRoute?.value?.meta?.isFullContent);
 });
 </script>
 
 <style scoped lang="scss">
-.layout-container {
-  /*height: 100vh;
-  overflow: hidden;*/
-  background-size: cover;
-  backdrop-filter: blur(10px);
-}
+
 </style>

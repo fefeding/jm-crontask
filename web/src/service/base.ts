@@ -1,36 +1,32 @@
-//import { requestApi } from '@fefeding/common/dist/utils/axios';
-//import { Request } from '@fefeding/common/dist/models/base/request';
-import Axios from 'axios';
-import type { AxiosRequestConfig } from 'axios';
-import config from '../base/config';
 
-const axios = Axios.create();
+import * as requestHelper from '@/utils/request';
+import type { AxiosRequestConfig } from 'axios';
+import * as eventBus from '../base/eventBus';
+import config from '../base/config';
 
 export function getRequestUrl(api: string) {
     if(/^(http(s)?:)?\/\//.test(api)) return api;
-    return `${location.protocol}//${location.hostname}:${location.port}${config.prefix}${api}`;
+    const apiUrl = config.apiUrl || `${location.protocol}//${location.hostname}${[80,443].includes(Number(location.port))?'':(':'+location.port)}`;
+    return `${apiUrl.trim()}${config.prefix}${api}`;
 }
-// 请求服务
-export async function request<T = any>(url: string, data?: any, option?: AxiosRequestConfig) {
+
+export async function requestServer(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) {
+    if(typeof url === 'object') {
+        option = url;
+        url = url.url?.toString() || '';
+    }
     url = getRequestUrl(url);
-    option = {
-        method: 'POST',
-        ...option
-    };
-    let res;
-    if(option.method === 'GET' || option.method === 'get') {
-        res = await axios.get(url, {
-            ...option,
-            params: data||{}
-        });
-    }
-    else {
-        res = await axios.post(url, data, option);
-    }
+    const res = await requestHelper.request(url, data, option);
+    return res;
+}
+
+// 请求服务
+export async function request<T = any>(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) { 
+    const res = await requestServer(url, data, option);
     if(res?.data.ret === 50001) {
         console.error('登陆态失效，请重新登陆后再试');
-        alert('登陆态已失效，请重新登陆');
-        location.reload();
+        res.data.msg = '登陆态失效，请重新登陆后再试';
+        eventBus.publish(eventBus.AUTHTIMEOUT, { message: res.data.msg });
     }
     if(res.status !== 200) {
         throw {
@@ -39,4 +35,12 @@ export async function request<T = any>(url: string, data?: any, option?: AxiosRe
         };
     }
     return res?.data as T;
+}
+
+// 请求管理端接口代理
+export async function requestBaseServerApi(api: string, data?: any): Promise<any> {
+    return request('/admin/requestBaseServer', {
+        api,
+        data,
+    });
 }

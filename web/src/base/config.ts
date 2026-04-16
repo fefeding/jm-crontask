@@ -1,12 +1,17 @@
 // 基础配置
-import { sysConfig } from '../domain/SysConfig';
-const config =
-    (window.__INITIAL_STATE__ && window.__INITIAL_STATE__.config) || {};
+
+const state = window.__INITIAL_STATE__ || {};
+
+const config = state.config || {};
+
 const prefix = config.prefix || '';
+const apiUrl = config.apiUrl || '';
+
 export default {
     ...config,
-    isManager: sysConfig.isManager,
+    state,
     prefix,
+    apiUrl,
     // api的根URL
     baseURL: `${location.origin}` + prefix,
     // xhr的超时时间
