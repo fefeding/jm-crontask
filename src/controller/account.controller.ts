@@ -42,8 +42,10 @@ export class AccountController extends BaseController {
 
     @All('/getByLoginId')
     @decorators.checkLogin(true)// 需要登陆态的接口
-    async getByLoginId(@Query('id') id: number) {
-        const res = await this.accountService.getByLoginId(id); 
+    async getByLoginId(@Query('id') id: string) {
+        // id 用 string 接收：声明成 number 会被参数校验转换成 NaN，
+        // 本地模式下按账号名查询（如 admin）就查不到了
+        const res = await this.accountService.getByLoginId(id);
         if(res?.data) {
             return {
                 loginId: id,

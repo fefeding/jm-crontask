@@ -102,6 +102,9 @@ export default (appInfo: MidwayAppInfo) => {
             timeout: Number(process.env.SESSION_TIMEOUT) || 20 * 60 * 1000,
             // Session 存储 key（与基础组件约定，勿删除，否则会话无法落库）
             serviceKey: 'session:service',
+            // JWT 签名密钥：本地签发（loginByAccount）与校验（AuthGuard 校验
+            // Bearer Token、本地模式会话校验）必须使用同一密钥，否则校验必然失败。
+            secretKey: process.env.SESSION_SECRET_KEY || 'fefeding',
         },
         // 静态文件服务
         staticFile: {

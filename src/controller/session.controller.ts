@@ -1,6 +1,6 @@
 import { Inject, Controller, All, Provide, Body, } from '@midwayjs/core';
 import { BaseController, utils } from '@cicctencent/midwayjs-base';
-import { SessionService } from '../service/session.service';
+import { SessionService, LOCAL_SESSION_SECRET_KEY } from '../service/session.service';
 import { UserService } from '../service/user.service';
 import { BizError } from '../errors/BizError';
 import { RET_BIZ_ERROR } from '../errors/retCode';
@@ -71,7 +71,9 @@ export class SessionController extends BaseController {
                     },                    
                     userId: user.id,
                 }
-                const token = 'Bearer ' + utils.encodeJWT(session, this.sessionService.sessionOption?.secretKey || 'fefeding');
+                // 签名密钥必须与校验端一致（session.secretKey），
+                // 否则 AuthGuard 校验 Bearer Token 时会判定失败
+                const token = 'Bearer ' + utils.encodeJWT(session, this.sessionService.sessionOption?.secretKey || LOCAL_SESSION_SECRET_KEY);
                 
                 utils.setAuthToken(this.ctx, token);// 写入cookie
                 return token;
