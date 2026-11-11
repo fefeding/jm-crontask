@@ -13,7 +13,7 @@
         </thead>
         <tbody class="table-group-divider">
             <tr v-for="(row, index) in props.data" :key="index" @click="emits('rowClicked', row, index)" style="cursor: pointer;">
-                <td v-for="column in props.columns" :key="column.name">
+                <td v-for="column in props.columns" :key="column.name" :style="column.style||''">
                     <slot :name="column.name||column" :row="row" :column="column">
                         <component v-if="column.component" :is="column.component"></component>
                         <span v-else>{{ renderDataItem(row, column) }}</span>
@@ -101,5 +101,17 @@
   }
   .datagrid-th {
     min-width: 80px;
+    white-space: nowrap;
+  }
+  /* 表格内的按钮保持单行文字，避免窄列时被压成竖排字符 */
+  .datagrid-inner :deep(.btn) {
+    white-space: nowrap;
+  }
+  /* 操作列按钮过多时整体换行，而不是互相挤压 */
+  .datagrid-inner :deep(.btn-group) {
+    flex-wrap: wrap;
+  }
+  .datagrid-inner :deep(.btn-group > .btn) {
+    flex: 0 0 auto;
   }
 </style>  

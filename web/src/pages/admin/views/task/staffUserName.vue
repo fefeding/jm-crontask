@@ -8,7 +8,8 @@ import { queryUserName } from '@/service/account';
 import { onMounted, ref } from 'vue';
     const props = defineProps({
         id: {
-            type: Number,
+            // updater 字段在库中是字符串（账号名或历史 id），不能只声明 Number
+            type: [Number, String],
             default: 0
         },
     });

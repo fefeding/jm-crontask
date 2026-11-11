@@ -13,8 +13,9 @@ export async function queryUser(queryInfo: any) {
 }
 
 export async function queryUserName(queryInfo: {
-        id?: number,
-        loginId?: number
+        // updater 在库中是字符串（账号名或历史 id），不能只声明 number
+        id?: number | string,
+        loginId?: number | string
     }) {
 
     let key = '';
