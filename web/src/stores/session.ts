@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
-import type { User } from '@fefeding/common/dist/models/account/user';
-//import type Account from '@fefeding/common/dist/models/account/account';
-import type { Session, } from '@fefeding/common/dist/models/account/session';
+import type { User } from '@cicctencent/common/dist/models/account/user';
+//import type Account from '@cicctencent/common/dist/models/account/account';
+import type { Session, } from '@cicctencent/common/dist/models/account/session';
 import { sysConfig } from '@/domain/SysConfig';
 
 

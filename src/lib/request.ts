@@ -1,4 +1,4 @@
-import { requestApi, requestServer } from '@fefeding/common/dist/utils/axios';
+import { requestApi, requestServer } from '@cicctencent/common/dist/utils/axios';
 
 /**
  * 请求远程API

@@ -44,8 +44,20 @@
       @pageChanged="pageChanged"
     >
     <template #updater="props">
-        <StaffUserName :id="props.row.updater" domain="" style="max-height: 30px;"></StaffUserName>
-      </template>
+      <StaffUserName :id="props.row.updater" domain="" style="max-height: 30px;"></StaffUserName>
+    </template>
+    <template #consecutiveFailures="props">
+      <span v-if="props.row.consecutiveFailures > 0" class="badge bg-danger">
+        {{ props.row.consecutiveFailures }} 次
+      </span>
+      <span v-else class="text-muted">0</span>
+    </template>
+    <template #missCount="props">
+      <span v-if="props.row.missCount > 0" class="badge bg-warning text-dark">
+        {{ props.row.missCount }} 次
+      </span>
+      <span v-else class="text-muted">0</span>
+    </template>
       <template #actions="props">
         <div class="btn-group btn-group-sm" role="group">
           <button 
@@ -100,7 +112,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref, reactive } from 'vue';
 import { useRouter, } from 'vue-router';
-import {TaskState, TaskTimeSize} from '../../../base/taskConst';
+import {TaskState, TaskTimeSize, TaskExecType} from '../../../base/taskConst';
 import { request } from '../../../service/base';
 import StaffUserName from './staffUserName.vue';
 import { type ToastType } from '@/components/toast/index';
@@ -113,12 +125,15 @@ const tableColumns = computed(() => [
   { name: 'id', text: 'ID' },
   { name: 'name', text: '名称' },
   { name: 'timeSize', text: '执行方式', formatter: (row: any) => getTimeTypeName(row) },
+  { name: 'execType', text: '执行器', formatter: (row: any) => getExecTypeName(row.execType) },
   { name: 'timeout', text: '超时设置(秒)' },
   { 
     name: 'updater', 
     text: '最近修改人',
   },
-  { name: 'lastRunTime', text: '最近执行时间' },
+  { name: 'lastRunTime', text: '最近执行时间', formatter: (row: any) => row.lastRunTime || '从未执行' },
+  { name: 'consecutiveFailures', text: '连续失败', formatter: (row: any) => row.consecutiveFailures || 0 },
+  { name: 'missCount', text: '上次漏跑', formatter: (row: any) => row.missCount || 0 },
   { name: 'state', text: '状态', formatter: (row: any) => getTaskStateName(row.state) },
   { name: 'actions', text: '操作' }
 ]);
@@ -246,6 +261,18 @@ const tableColumns = computed(() => [
         }
         return '';
     }    
+
+    // 获取执行器文案
+    function getExecTypeName(v: number): string {
+        switch(v) {
+            case TaskExecType.js: return '内联 JS';
+            case TaskExecType.node: return '子进程 JS';
+            case TaskExecType.shell: return 'Shell';
+            case TaskExecType.python: return 'Python';
+            case TaskExecType.command: return '外部命令';
+        }
+        return '未知';
+    }
 
     // 获取执行方式文案
     function getTaskStateName(v: TaskState) {

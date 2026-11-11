@@ -19,14 +19,16 @@
       "./node_modules/@types"
     ],
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "outDir": "dist"
   },
   "exclude": [
     "dist",
     "node_modules",
-    "test"
+    "test",
+    "web"
   ],
   "ts-node": {
     "compilerOptions": {

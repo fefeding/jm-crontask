@@ -1,9 +1,9 @@
 import { Inject, Controller, All, Provide, Body, Query } from '@midwayjs/core';
 import { BaseController, decorators } from '@cicctencent/midwayjs-base';
 import { AccountService } from '../service/account.service';
-import { PageRequest } from '@fefeding/common/dist/models/base/pagination';
-import Account from '@fefeding/common/dist/models/account/account';
-import User from '@fefeding/common/dist/models/account/user';
+import { PageRequest } from '@cicctencent/common/dist/models/base/pagination';
+import Account from '@cicctencent/common/dist/models/account/account';
+import User from '@cicctencent/common/dist/models/account/user';
 
 @Provide()
 @Controller('/api/account')

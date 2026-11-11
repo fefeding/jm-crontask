@@ -2,8 +2,32 @@
 import { ref, onMounted } from 'vue';
 import { getTaskStatistics, getSystemInfo, getRecentTasks } from '@/service/dashboard';
 
+/** 任务统计 */
+export interface TaskStatistics {
+  totalTasks: number;
+  runningTasks: number;
+  completedTasks: number;
+  failedTasks: number;
+  timeoutTasks?: number;
+  pendingTasks?: number;
+  totalInstances?: number;
+  successRate?: number;
+  failed24h?: number;
+}
+
+/** 最近任务条目 */
+export interface RecentTask {
+  id: number;
+  taskId?: number;
+  name: string;
+  executeTime: string;
+  status: string;
+  duration: string;
+  exitCode?: number;
+}
+
 // 统计数据
-const statistics = ref({
+const statistics = ref<TaskStatistics>({
   totalTasks: 0,
   runningTasks: 0,
   completedTasks: 0,
@@ -15,11 +39,12 @@ const systemInfo = ref({
   version: '1.0.0',
   uptime: '0天 0小时',
   nodeVersion: '',
-  memoryUsage: '0MB'
-});
+  memoryUsage: '0MB',
+  platform: ''
+} as { version: string, uptime: string, nodeVersion: string, memoryUsage: string, platform?: string });
 
 // 最近任务
-const recentTasks = ref([]);
+const recentTasks = ref<RecentTask[]>([]);
 const loading = ref(false);
 
 // 加载仪表板数据

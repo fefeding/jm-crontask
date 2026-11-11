@@ -1,9 +1,9 @@
 import { Provide } from '@midwayjs/core';
 import { BaseService } from '@cicctencent/midwayjs-base';
-import Account from '@fefeding/common/dist/models/account/account';
-import { PageRequest, PageResponse } from '@fefeding/common/dist/models/base/pagination';
-import { Response } from '@fefeding/common/dist/models/base/response';
-import { User } from '@fefeding/common/dist/models/account/user';
+import Account from '@cicctencent/common/dist/models/account/account';
+import { PageRequest, PageResponse } from '@cicctencent/common/dist/models/base/pagination';
+import { Response } from '@cicctencent/common/dist/models/base/response';
+import { User } from '@cicctencent/common/dist/models/account/user';
 
 
 @Provide()

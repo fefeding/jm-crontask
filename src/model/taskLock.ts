@@ -1,6 +1,6 @@
 'use strict';
 import { Entity, PrimaryColumn, Column } from 'typeorm';
-import BaseEntity from '@fefeding/common/dist/models/base/baseORM';
+import BaseEntity from '@cicctencent/common/dist/models/base/baseORM';
 
 
 @Entity('t_task_lock')

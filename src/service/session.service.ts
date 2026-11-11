@@ -1,6 +1,6 @@
 import { Provide, Scope, ScopeEnum, Config, Inject } from '@midwayjs/core';
 import { ISessionService, TencentService } from '@cicctencent/midwayjs-base';
-import { Session, GetLoginSessionReq, GetLoginSessionRes, LogoutReq, LogoutRes, LoginByWxReq, LoginByWxRsp, LoginByAccountReq, LoginByAccountRsp } from '@fefeding/common/dist/models/account/session';
+import { Session, GetLoginSessionReq, GetLoginSessionRes, LogoutReq, LogoutRes, LoginByWxReq, LoginByWxRsp, LoginByAccountReq, LoginByAccountRsp } from '@cicctencent/common/dist/models/account/session';
 
 @Provide('session:service')
 @Scope(ScopeEnum.Request, { allowDowngrade: true })

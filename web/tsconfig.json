@@ -8,6 +8,7 @@
         "src/**/*.vue",
         "src/**/**/**/**/**/*.vue",
         "package.json",
+        "build/**/*",
         "../src/config/devops.config.ts",
         "vite.config.*",
         "vitest.config.*",

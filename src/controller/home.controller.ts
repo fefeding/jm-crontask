@@ -12,7 +12,9 @@ export class HomeController {
     @Config('sso')
     ssoOption: any;
 
+    @Get('/login')
     @Get('/admin/login')
+    @Get('/logout')
     @Get('/admin/logout')
     @decorators.checkLogin(false)
     async login(): Promise<string> {

@@ -23,3 +23,9 @@ layer/layer.zip
 npminstall-debug.log
 server.zip
 pnpm-lock.yaml
+
+# 任务调度运行时产物
+data/exec/
+data/publish/
+data/logs/
+data/test-exec/

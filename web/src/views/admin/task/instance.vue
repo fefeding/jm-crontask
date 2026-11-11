@@ -27,6 +27,7 @@
               <option value="2">成功</option>
               <option value="3">失败</option>
               <option value="4">超时</option>
+              <option value="5">已终止</option>
             </select>
           </div>
           <div class="col-auto d-flex align-items-end">
@@ -52,6 +53,12 @@
       <template #updater="props">
         <StaffUserName :id="props.row.updater" domain="" style="max-height: 30px;"></StaffUserName>
       </template>
+      <template #duration="props">
+        {{ props.row.duration ? (props.row.duration / 1000).toFixed(2) + 's' : '-' }}
+      </template>
+      <template #triggerType="props">
+        {{ props.row.triggerType == 1 ? '手动' : '定时' }}
+      </template>
       <template #actions="props">
         <div class="btn-group btn-group-sm" role="group">
           <button 
@@ -65,6 +72,14 @@
             v-if="props.row.status == 1" 
             type="button" 
             class="btn btn-danger"
+            @click="killInstance(props.row.id)"
+          >
+            终止
+          </button>
+          <button 
+            v-if="props.row.status != 1" 
+            type="button" 
+            class="btn btn-outline-danger"
             @click="setFailed(props.row.id)"
           >
             作废
@@ -81,6 +96,7 @@ import { computed, getCurrentInstance, onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
 import {TaskStatus} from '../../../base/taskConst';
 import { request } from '../../../service/base';
+import { killInstance as killInstanceApi } from '@/service/instance';
 import StaffUserName from './staffUserName.vue';
 import { type ToastType } from '@/components/toast/index';
 import Modal from '@/components/modal/index.vue';
@@ -96,6 +112,9 @@ const tableColumns = computed(() => [
   { name: 'execServer', text: '服务器' },
   { name: 'execStartTime', text: '执行起始时间' },
   { name: 'execEndTime', text: '执行结束时间' },
+  { name: 'duration', text: '耗时' },
+  { name: 'exitCode', text: '退出码' },
+  { name: 'triggerType', text: '触发方式' },
   { name: 'updater', text: '最近修改人' },
   { name: 'actions', text: '操作' }
 ]);
@@ -160,6 +179,26 @@ const tableColumns = computed(() => [
         }
     }
 
+    // 终止正在运行的实例
+    async function killInstance(id: number) {
+        const confirmed = confirm('确定要终止该实例吗？正在运行的进程会被强制结束。');
+        if (!confirmed) return;
+
+        loading.value = true;
+        try {
+            const data = await killInstanceApi(id);
+            if(data.ret == 0) {
+              $toast?.success('已终止');
+              query();
+            }
+            else {
+              $toast?.error(data.msg || '终止失败');
+            }
+        } finally {
+            loading.value = false;
+        }
+    }
+
     // 获取状态徽章样式
     function getStatusBadgeClass(status: number): string {
         switch(status) {
@@ -177,6 +216,9 @@ const tableColumns = computed(() => [
             }
             case TaskStatus.timeout: {
                 return 'bg-warning';
+            }
+            case TaskStatus.canceled: {
+                return 'bg-dark';
             }
         }
         return 'bg-secondary';
@@ -199,6 +241,9 @@ const tableColumns = computed(() => [
             }
             case TaskStatus.timeout: {
                 return `超时`;
+            }
+            case TaskStatus.canceled: {
+                return `已终止`;
             }
         }
         return '';

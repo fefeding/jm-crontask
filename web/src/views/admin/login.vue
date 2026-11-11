@@ -109,7 +109,7 @@
             localStorage.setItem(accountKey, form.name);
 
             setTimeout(()=>{
-                const url = `${location.origin}${config.prefix}/admin/index`;
+                const url = `${location.origin}${config.prefix}/admin/home`;
                 location.replace(url);
             }, 1000);
           }

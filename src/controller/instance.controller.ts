@@ -14,13 +14,12 @@ export class TaskInstanceController extends BaseController {
 
     /**
      * 查询任务实例
-     * @param ctx 
+     * @param ctx
      */
     @decorators.checkApiToken(false)
     @decorators.checkLogin(true)
     @All('/query')
     public async query(@Body() params: any): Promise<any> {
-        
         const res = await this.taskInstanceService.query(params);
         return res;
     }
@@ -32,9 +31,7 @@ export class TaskInstanceController extends BaseController {
     @decorators.checkApiToken(false)
     @decorators.checkLogin(true)
     @All('/get')
-    public async get(@Body() params: {
-        id: number
-    }): Promise<any> {
+    public async get(@Body() params: { id: number }): Promise<any> {
         const data = await this.taskInstanceService.getById(params.id);
 
         return data;
@@ -47,13 +44,31 @@ export class TaskInstanceController extends BaseController {
     @decorators.checkApiToken(false)
     @decorators.checkLogin(true)
     @All('/updateStatus')
-    public async updateStatus(@Body() params: {
-        id: number,
-        status: TaskStatus
-    }): Promise<any> {
-        if(!this.taskInstanceService.checkManager()) {
+    public async updateStatus(
+        @Body() params: { id: number; status: TaskStatus }
+    ): Promise<any> {
+        if (!this.taskInstanceService.checkManager()) {
             throw Error('没有权限');
         }
-        return await this.taskInstanceService.updateStatus(params.id, params.status);
+        return await this.taskInstanceService.updateStatus(
+            params.id,
+            params.status
+        );
+    }
+
+    /**
+     * 人工终止正在运行的实例
+     */
+    @All('/kill')
+    @decorators.checkApiToken(false)
+    @decorators.checkLogin(true)
+    public async kill(@Body() params: { id: number }): Promise<any> {
+        if (!this.taskInstanceService.checkManager()) {
+            throw Error('没有权限');
+        }
+        if (!params.id) {
+            throw Error('请指定实例');
+        }
+        return await this.taskInstanceService.killInstance(params.id);
     }
 }

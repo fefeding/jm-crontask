@@ -3,9 +3,9 @@
     <!-- 面包屑导航 -->
     <nav aria-label="breadcrumb" class="mb-4" v-if="!isFullContent">
       <ol class="breadcrumb">
-        <!-- 首页固定项，跳转至/admin/index -->
+        <!-- 首页固定项，跳转至/admin/home -->
         <li class="breadcrumb-item">
-          <router-link to="/admin/index" class="text-decoration-none">首页</router-link>
+          <router-link to="/admin/home" class="text-decoration-none">首页</router-link>
         </li>
         
         <!-- 动态生成其他层级 -->
@@ -52,7 +52,7 @@ const isFullContent = computed(() => props.isFullContent);
 const breadcrumbItems = computed(() => {
   return route.matched
     .filter(item => item.meta && item.meta.title)
-    .filter(item => item.path !== '/admin/index'); // 排除首页，避免重复显示
+    .filter(item => item.path !== '/admin/home'); // 排除首页，避免重复显示
 });
 </script>
 

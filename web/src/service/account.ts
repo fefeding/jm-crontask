@@ -1,8 +1,8 @@
 
-import type { PageResponse } from '@fefeding/common/dist/models/base/pagination';
+import type { PageResponse } from '@cicctencent/common/dist/models/base/pagination';
 import { request, getRequestUrl } from './base';
-import type Account from '@fefeding/common/dist/models/account/account';
-import type User from '@fefeding/common/dist/models/account/user';
+import type Account from '@cicctencent/common/dist/models/account/account';
+import type User from '@cicctencent/common/dist/models/account/user';
 
 const userNameCache = {} as any;// 用户名缓存
 

@@ -1,8 +1,21 @@
 <template>      
-    <div class="log-container">
-        <p v-for="(item, index) in logLines" :key="index">
-            {{ item }}
-        </p>
+    <div>
+        <div v-if="instance.id" class="row g-2 mb-3">
+            <div class="col-auto"><small class="text-muted">实例ID：</small>{{ instance.id }}</div>
+            <div class="col-auto"><small class="text-muted">状态：</small>{{ getStatusName(instance.status) }}</div>
+            <div class="col-auto"><small class="text-muted">耗时：</small>{{ instance.duration ? (instance.duration/1000).toFixed(2)+'s' : '-' }}</div>
+            <div class="col-auto"><small class="text-muted">退出码：</small>{{ instance.exitCode }}</div>
+            <div class="col-auto"><small class="text-muted">重试次数：</small>{{ instance.retryCount || 0 }}</div>
+            <div class="col-auto"><small class="text-muted">触发方式：</small>{{ instance.triggerType == 1 ? '手动' : '定时' }}</div>
+            <div class="col-auto"><small class="text-muted">执行服务器：</small>{{ instance.execServer || '-' }}</div>
+            <div class="col-auto"><small class="text-muted">日志文件：</small>{{ instance.logPath || '-' }}</div>
+            <div class="col-auto"><small class="text-muted">产物备份：</small>{{ instance.publishPath || '-' }}</div>
+        </div>
+        <div class="log-container">
+            <p v-for="(item, index) in logLines" :key="index">
+                {{ item }}
+            </p>
+        </div>
     </div>
 </template>
 <style scoped>
@@ -49,13 +62,22 @@ import { onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
 import {TaskStatus} from '../../../base/taskConst';
 import { request } from '../../../service/base';
+import type { TaskInstance } from '@/domain/task';
     const router = useRouter();
     const instance = ref({
+        id: 0,
         log: '',
         execStartTime: '',
         execEndTime: '',
+        execServer: '',
+        duration: 0,
+        exitCode: 0,
+        retryCount: 0,
+        triggerType: 0,
+        logPath: '',
+        publishPath: '',
         status: TaskStatus.init
-    } as any);
+    } as any as TaskInstance);
 
     const logLines = ref([] as Array<string>);
 
@@ -71,12 +93,24 @@ import { request } from '../../../service/base';
             const res = await request('/api/instance/get', {
                 id: id
             });
-            console.log(res);
             if(res.ret == 0 && res.data) {
                 
                  Object.assign(instance.value, res.data);                
-                logLines.value = res.data.log?.split('\n');
+                logLines.value = res.data.log?.split('\n') || [];
             }
         }
+    }
+
+    // 状态文案
+    function getStatusName(status: number): string {
+        switch(status) {
+            case TaskStatus.init: return '等待执行';
+            case TaskStatus.running: return '执行中';
+            case TaskStatus.success: return '成功';
+            case TaskStatus.failed: return '失败';
+            case TaskStatus.timeout: return '超时';
+            case TaskStatus.canceled: return '已终止';
+        }
+        return '';
     }
 </script>

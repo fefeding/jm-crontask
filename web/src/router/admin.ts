@@ -22,7 +22,8 @@ const router = createRouter({
                 {
                     path: 'admin/home',
                     name: 'Home',
-                    alias: 'index',
+                    // 兼容旧的 /admin/index、/index 深链
+                    alias: ['index', 'admin/index'],
                     meta: { title: '首页', needAuth: true },
                     // route level code-splitting
                     // this generates a separate chunk (About.[hash].js) for this route
@@ -30,13 +31,16 @@ const router = createRouter({
                     component: () => import('../views/admin/homeView.vue'),
                 },
                 {
-                    path: 'admin/login',
+                    path: 'login',
                     name: 'login',
+                    // 兼容旧的 /admin/login 深链
+                    alias: 'admin/login',
                     component: () => import('../views/admin/login.vue'),
                 },
                 {
-                    path: 'admin/logout',
+                    path: 'logout',
                     name: 'logout',
+                    alias: 'admin/logout',
                     component: () => import('../views/admin/login.vue'),
                 },
                 {

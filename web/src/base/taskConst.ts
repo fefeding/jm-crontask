@@ -43,13 +43,44 @@ export enum TaskStatus {
     /** 执行失败 */
     failed = 3,
     /** 执行超时 */
-    timeout = 4
+    timeout = 4,
+    /** 已取消（人工终止） */
+    canceled = 5
+}
+
+/**
+ * 任务执行器类型
+ */
+export enum TaskExecType {
+    /** 内联 JS 脚本（主进程执行，兼容历史任务） */
+    js = 0,
+    /** 外部命令 */
+    command = 1,
+    /** 子进程执行 JS 脚本 */
+    node = 2,
+    /** shell 脚本 */
+    shell = 3,
+    /** python 脚本 */
+    python = 4
+}
+
+/**
+ * 漏跑补偿策略
+ */
+export enum TaskMissPolicy {
+    /** 只补跑一次 */
+    once = 0,
+    /** 全量补跑 */
+    all = 1,
+    /** 跳过不补 */
+    skip = 2
 }
 
 /** 任务锁 */
 export enum TaskLockKeys {
     master = 'master_lock',
-    task = 'task_lock'
+    task = 'task_lock',
+    watchdog = 'watchdog_lock'
 }
 
 // egg任务状态

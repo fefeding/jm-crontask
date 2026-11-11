@@ -3,7 +3,7 @@ import { BaseService } from '@cicctencent/midwayjs-base';
 import { InjectDataSource, } from '@midwayjs/typeorm';
 import { DataSource, FindManyOptions, Like, Repository } from 'typeorm';
 import User from '../model/user.entity'; // 引入用户模型
-import { EEnable } from '@fefeding/common/dist/models/account/user';
+import { EEnable } from '@cicctencent/common/dist/models/account/user';
 import * as md5 from 'blueimp-md5';
 
 // 分页请求参数类型
@@ -290,6 +290,37 @@ export class UserService extends BaseService {
       user = await this.getUserById(this.ctx.currentSession.userId);
     }
     return user?.role === 'admin';
+  }
+
+  /**
+   * 管理员账号播种：确保 managerAccounts 中的账号存在，缺失则创建（初始密码 defaultPassword）
+   * 由 initializers/user-seed.initializer.ts 在启动时调用，幂等。
+   * @param managerAccounts 管理员账号列表
+   * @param defaultPassword 初始密码（未配置则跳过创建并告警）
+   */
+  async ensureManagerAccountsSeeded(
+    managerAccounts: string[],
+    defaultPassword?: string
+  ): Promise<void> {
+    for (const account of managerAccounts) {
+      const existing = await this.getUserByAccount(account);
+      if (existing) continue;
+      if (!defaultPassword) {
+        console.warn(
+          `[UserSeed] 管理员账号 ${account} 不存在且未配置 DEFAULT_ADMIN_PASSWORD，跳过创建`
+        );
+        continue;
+      }
+      const user = new User();
+      user.account = account;
+      user.name = account;
+      user.password = this.encryptPassword(account, defaultPassword);
+      user.enable = EEnable.ENABLE;
+      user.role = 'admin';
+      user.creator = user.updater = 'system';
+      await this.model.save(user);
+      console.log(`[UserSeed] 已创建管理员账号 ${account}`);
+    }
   }
 
   /**

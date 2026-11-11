@@ -1,5 +1,5 @@
-import BaseEntity from '@fefeding/common/dist/models/base/baseORM';
-import { EEnable, } from '@fefeding/common/dist/models/account/user';
+import BaseEntity from '@cicctencent/common/dist/models/base/baseORM';
+import { EEnable, } from '@cicctencent/common/dist/models/account/user';
 
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
