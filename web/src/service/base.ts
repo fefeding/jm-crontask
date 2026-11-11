@@ -38,20 +38,24 @@ export async function requestServer(url: string|AxiosRequestConfig, data?: any, 
 // 请求服务
 export async function request<T = any>(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) { 
     const res = await requestServer(url, data, option);
-    if(res?.data.ret === 50001) {
+    // 部分接口（如 /api/session/logout）成功时返回空响应体，
+    // 此处不能用 res.data.ret 直接解引用，否则空 body 会抛 TypeError，
+    // 连带中断调用方后续逻辑（如登出后的跳转）。
+    const body = res?.data;
+    if(body?.ret === 50001) {
         console.error('登陆态失效，请重新登陆后再试');
-        res.data.msg = '登陆态失效，请重新登陆后再试';
-        eventBus.publish(eventBus.AUTHTIMEOUT, { message: res.data.msg });
+        body.msg = '登陆态失效，请重新登陆后再试';
+        eventBus.publish(eventBus.AUTHTIMEOUT, { message: body.msg });
     }
     if(res.status !== 200) {
         // 保留后端返回的 ret/msg，避免调用方只能拿到 statusText（如「系统错误」）
         throw {
-            ret: res.data?.ret ?? res.status,
-            msg: res.data?.msg || res.statusText || `请求失败(${res.status})`,
+            ret: body?.ret ?? res.status,
+            msg: body?.msg || res.statusText || `请求失败(${res.status})`,
             status: res.status,
         };
     }
-    return res?.data as T;
+    return body as T;
 }
 
 // 请求管理端接口代理

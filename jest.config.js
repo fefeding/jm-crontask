@@ -35,8 +35,10 @@ const uuidCjs = resolveUuidCjsEntry();
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>/test/fixtures'],
-  coveragePathIgnorePatterns: ['<rootDir>/test/'],
+  // 前端用例由 web 侧 vitest 运行（web/package.json: test:unit），
+  // 这里必须排除 web/，否则 jest 会去跑 vitest 语法的用例并报 suite failed to run
+  testPathIgnorePatterns: ['<rootDir>/test/fixtures', '<rootDir>/web/'],
+  coveragePathIgnorePatterns: ['<rootDir>/test/', '<rootDir>/web/'],
   ...(uuidCjs
     ? {
       moduleNameMapper: {

@@ -103,7 +103,9 @@
             localStorage.setItem(accountKey, form.name);
 
             setTimeout(()=>{
-                const url = `${location.origin}${config.prefix}/admin/home`;
+                // 跳管理端首页：整页跳转会带上服务端写入的认证 cookie，
+                // 后端据此把登录态注入 __INITIAL_STATE__.session
+                const url = `${location.origin}${config.prefix}/admin/index`;
                 location.replace(url);
             }, 1000);
           }

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useTitle } from '@vueuse/core';
 import { abortAllPending } from '@/adapter/ajax';
 import { initLoginState, redirectToLogin } from '@/service/login';
-import { useSessionStore } from '@/stores/session';
+import { decideGuardAction } from '@/utils/login-policy';
 import { sysConfig } from '@/domain/SysConfig';
 
 import adminRouters from './admin/router';
@@ -59,25 +59,31 @@ router.beforeEach(async (to) => {
     // 切换路由取消请求
     abortAllPending();
 
-    const sessionStore = useSessionStore();
+    // 登录态校准：initLoginState 内部按「服务端快照 vs 运行期会话」四态决策，
+    // 不会出现「旧快照覆盖新会话」把刚登录成功的用户踢回登录页的情况。
+    //
+    // 总超时兜底：initLoginState 内含向服务端核实登录态的请求，万一悬挂，
+    // 导航不能永远卡在 beforeEach（会整页白屏）；超时即按「未登录」处理。
+    const loggedIn = await Promise.race([
+        initLoginState(),
+        new Promise<boolean>((resolve) => {
+            window.setTimeout(() => resolve(false), LOGIN_STATE_TIMEOUT_MS);
+        }),
+    ]);
 
-    // 未登录时，用 token cookie / auth_code 向服务端核对一次登录态。
-    // 已登录则跳过，避免每次导航都发请求。
-    // 总超时兜底：initLoginState 内含向服务端核实的请求，万一悬挂，
-    // 导航不能永远卡在 beforeEach（会整页白屏）。
-    if (!sessionStore.isLoggedIn) {
-        await Promise.race([
-            initLoginState(),
-            new Promise<boolean>((resolve) => {
-                window.setTimeout(() => resolve(false), LOGIN_STATE_TIMEOUT_MS);
-            }),
-        ]);
-    }
+    // 登录/登出入口本身不再跳登录：
+    // SSO 未启用时登录入口就是本 SPA 的 /login 路由，若在登录页上也执行
+    // 「未登录 → 跳登录」，就会形成「跳到登录页 → 守卫又跳登录页」的死循环，
+    // 表现为页面不断刷新、永远停在登录页。
+    const isAuthPage = to.name === 'login'
+        || to.name === 'admin_login'
+        || to.name === 'logout'
+        || to.name === 'admin_logout'
+        || to.meta?.isFullContent;
 
-    // 需要登录态的页面：仍未登录则跳登录入口。
-    // 必须中断本次导航，否则会停留在无登录态的外壳页，
-    // 而所有 /api 请求都会被服务端以「需要登陆态」拒绝。
-    if (to.meta?.needAuth && !sessionStore.isLoggedIn) {
+    // 未登录时跳转登录入口，不能只取消导航——否则会停留在无登录态的外壳页，
+    // 界面可能仍显示本地残留的旧用户，而所有 /api 请求都被服务端以「需要登陆态」拒绝。
+    if (!isAuthPage && decideGuardAction(loggedIn) === 'login') {
         return redirectToLogin();
     }
     return true;

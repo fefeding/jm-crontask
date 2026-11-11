@@ -46,6 +46,19 @@ export default class SysConfig extends Entity<SysConfigState> {
         return this.state.session;
     }
 
+    /**
+     * 回写会话快照。
+     *
+     * sysConfig.session 初始来自后端注入（= 页面加载那一刻的登录态快照），
+     * SPA 路由切换不会重新注入，故登录/登出成功后必须显式回写，
+     * 否则路由守卫仍会按「打开页面时」的旧快照校准登录态：
+     * 快照为 null 时会把刚登录成功的会话清掉（用户被反复踢回登录页），
+     * 快照为已登录时会把刚登出的会话复活（界面显示已登录但接口全部报需要登陆态）。
+     */
+    set session(session: any) {
+        this.state.session = session;
+    }
+
     get isManager() {
         return this.state.isManager;
     }
