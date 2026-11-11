@@ -94,8 +94,8 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
-import {TaskStatus} from '../../../base/taskConst';
-import { request } from '../../../service/base';
+import {TaskStatus} from '@/base/taskConst';
+import { request } from '@/service/base';
 import { killInstance as killInstanceApi } from '@/service/instance';
 import StaffUserName from './staffUserName.vue';
 import { type ToastType } from '@/components/toast/index';

@@ -1,0 +1,6 @@
+# 前端子项目的 pnpm 配置
+# 与根级 pnpm-workspace.yaml 保持同一套写法（allowBuilds）
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  esbuild: true

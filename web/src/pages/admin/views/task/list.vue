@@ -237,8 +237,8 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref, reactive } from 'vue';
 import { useRouter, } from 'vue-router';
-import {TaskState, TaskTimeSize, TaskExecType} from '../../../base/taskConst';
-import { request } from '../../../service/base';
+import {TaskState, TaskTimeSize, TaskExecType} from '@/base/taskConst';
+import { request } from '@/service/base';
 import { diagnoseTask } from '@/service/task';
 import type { DiagnoseResult, DiagnoseHealth, DiagnoseIssueLevel } from '@/domain/task';
 import Modal from '@/components/modal/index.vue';

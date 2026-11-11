@@ -60,8 +60,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter, } from 'vue-router';
-import {TaskStatus} from '../../../base/taskConst';
-import { request } from '../../../service/base';
+import {TaskStatus} from '@/base/taskConst';
+import { request } from '@/service/base';
 import type { TaskInstance } from '@/domain/task';
     const router = useRouter();
     const instance = ref({

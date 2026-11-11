@@ -121,8 +121,9 @@ crontask/
 │   ├── initializers/         # Startup initializers (admin account seeding, etc.)
 │   └── errors/               # Business exceptions and response codes
 ├── web/                      # Frontend Vue 3 application
-│   ├── src/views/            # Pages (task management, instance monitoring, dashboard, ...)
-│   ├── src/router/           # Frontend routes
+│   ├── src/pages/            # Page modules (admin layout / views / routes / theme)
+│   ├── src/locales/          # i18n language packs (zh-CN / en-US)
+│   ├── src/components/       # Shared components (DataGrid / Modal / Toast / LangSwitch)
 │   └── vite.config.ts        # Build config (with dev-proxy fix)
 ├── data/
 │   └── migrations/           # Database migration scripts (idempotent SQL)

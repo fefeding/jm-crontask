@@ -250,7 +250,7 @@ onMounted(() => {
                   <h6 class="card-title text-muted mb-2">总任务数</h6>
                   <h3 class="card-text mb-0">{{ statistics.totalTasks }}</h3>
                 </div>
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary rounded-circle p-3">
+                <div class="stat-icon bg-primary/10 text-primary rounded-circle p-3">
                   <i class="bi bi-list-task fs-4"></i>
                 </div>
               </div>
@@ -266,7 +266,7 @@ onMounted(() => {
                   <h6 class="card-title text-muted mb-2">运行中</h6>
                   <h3 class="card-text mb-0 text-primary">{{ statistics.runningTasks }}</h3>
                 </div>
-                <div class="stat-icon bg-success bg-opacity-10 text-success rounded-circle p-3">
+                <div class="stat-icon bg-success/10 text-success rounded-circle p-3">
                   <i class="bi bi-play-circle fs-4"></i>
                 </div>
               </div>
@@ -282,7 +282,7 @@ onMounted(() => {
                   <h6 class="card-title text-muted mb-2">已完成</h6>
                   <h3 class="card-text mb-0 text-success">{{ statistics.completedTasks }}</h3>
                 </div>
-                <div class="stat-icon bg-info bg-opacity-10 text-info rounded-circle p-3">
+                <div class="stat-icon bg-info/10 text-info rounded-circle p-3">
                   <i class="bi bi-check-circle fs-4"></i>
                 </div>
               </div>
@@ -298,7 +298,7 @@ onMounted(() => {
                   <h6 class="card-title text-muted mb-2">失败数</h6>
                   <h3 class="card-text mb-0 text-danger">{{ statistics.failedTasks }}</h3>
                 </div>
-                <div class="stat-icon bg-danger bg-opacity-10 text-danger rounded-circle p-3">
+                <div class="stat-icon bg-danger/10 text-danger rounded-circle p-3">
                   <i class="bi bi-x-circle fs-4"></i>
                 </div>
               </div>

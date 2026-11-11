@@ -133,8 +133,9 @@ crontask/
 │   ├── initializers/         # 启动初始化（管理员账号播种等）
 │   └── errors/               # 业务异常与响应码约定
 ├── web/                      # 前端 Vue 3 应用
-│   ├── src/views/            # 页面（任务管理、实例监控、仪表盘等）
-│   ├── src/router/           # 前端路由
+│   ├── src/pages/            # 页面模块（管理端布局 / 页面 / 路由 / 主题样式）
+│   ├── src/locales/          # 国际化语言包（zh-CN / en-US）
+│   ├── src/components/       # 公共组件（DataGrid / Modal / Toast / LangSwitch）
 │   └── vite.config.ts        # 构建配置（含开发代理修复）
 ├── data/
 │   └── migrations/           # 数据库迁移脚本（幂等 SQL）

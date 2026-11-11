@@ -287,8 +287,8 @@ import 'no-vue3-cron/lib/noVue3Cron.css'; // 引入样式
 
 import { computed, getCurrentInstance, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {TaskState, TaskTimeSize, TaskExecType, TaskMissPolicy} from '../../../base/taskConst';
-import { request } from '../../../service/base';
+import {TaskState, TaskTimeSize, TaskExecType, TaskMissPolicy} from '@/base/taskConst';
+import { request } from '@/service/base';
 import { testScript } from '@/service/task';
 import { type ToastType } from '@/components/toast/index';
 

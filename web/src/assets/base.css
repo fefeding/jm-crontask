@@ -1,1 +1,9 @@
 /* color palette from <https://github.com/vuejs/theme> */
+
+/*
+ * Tailwind 工具类
+ * 注意：不启用 @tailwind base（preflight 已在 tailwind.config.js 中关闭），
+ * 基础样式统一由 Bootstrap reboot 负责，避免两套 reset 互相覆盖。
+ */
+@tailwind components;
+@tailwind utilities;

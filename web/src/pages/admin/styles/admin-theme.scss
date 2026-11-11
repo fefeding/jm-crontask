@@ -1,0 +1,1103 @@
+/**
+ * 管理后台主题样式
+ *
+ * 布局与视觉对齐 work 工作台（深色分组侧边栏 + 无顶栏全高内容区 + 统一页头标准），
+ * 主色沿用管理端既有的 bootstrap 蓝，保证与页面内 bootstrap 组件（按钮/表格/弹窗）一致。
+ */
+@use 'sass:color';
+
+// ============================================
+// 颜色变量
+// ============================================
+$primary: #007bff;
+$secondary: #6c757d;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+$light: #f8f9fa;
+$dark: #343a40;
+
+// 侧边栏
+$sidebar-bg: #1a2332;
+$sidebar-bg-light: #243044;
+$sidebar-hover: rgba(255, 255, 255, 0.08);
+$sidebar-active: $primary;
+$sidebar-text: #8b95a5;
+$sidebar-text-active: #ffffff;
+
+// 内容区域
+$content-bg: #f5f6f8;
+$card-bg: #ffffff;
+$header-bg: #ffffff;
+$border-color: #e4e7ec;
+$border-radius: 10px;
+
+// 文字
+$text-primary: #1e2a3a;
+$text-secondary: #5f6b7a;
+$text-muted: #8b95a5;
+
+// 阴影
+$shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+$shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+$shadow-lg: 0 4px 12px rgba(16, 24, 40, 0.1);
+
+// ============================================
+// 布局变量
+// ============================================
+// 管理端底部比工作台多一个语言切换入口，故侧边栏略宽一档，保证用户名不被截断
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 64px;
+
+// ============================================
+// 全局样式
+// ============================================
+.admin-layout {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: $text-primary;
+
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// ============================================
+// 侧边栏
+// ============================================
+.admin-sidebar {
+  width: $sidebar-width;
+  height: 100vh;
+  background: $sidebar-bg;
+  color: $sidebar-text;
+  transition: width 0.25s ease;
+  flex-shrink: 0;
+
+  /* ---------- 品牌区 ---------- */
+  .sidebar-header {
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .brand-image {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .collapse-btn {
+      background: transparent;
+      border: none;
+      color: $sidebar-text;
+      padding: 4px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+
+      &:hover {
+        background: $sidebar-hover;
+        color: #fff;
+      }
+    }
+  }
+
+  /* ---------- 导航区 ---------- */
+  .sidebar-nav {
+    padding: 12px 0;
+
+    .nav-group {
+      margin-bottom: 2px;
+
+      & + .nav-group {
+        margin-top: 2px;
+      }
+    }
+
+    // 一级常驻项：与下方分组以分隔线区隔
+    .nav-top-items {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 0 0 6px;
+      padding-bottom: 6px;
+    }
+
+    // 分组标题（可点击折叠）：视觉上作为分区标签，与子项明显区分
+    .nav-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px 6px;
+      margin: 6px 8px 2px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.4);
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      &.active {
+        color: $primary;
+      }
+
+      // 左侧短竖条装饰，强调“分区”语义
+      &::before {
+        content: '';
+        width: 3px;
+        height: 11px;
+        border-radius: 2px;
+        background: currentColor;
+        opacity: 0.55;
+        flex-shrink: 0;
+      }
+
+      .nav-group-icon {
+        font-size: 13px;
+        width: 14px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      .nav-group-label {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-group-chevron {
+        font-size: 10px;
+        opacity: 0.6;
+        transition: transform 0.2s ease;
+        transform: rotate(0deg);
+
+        &.collapsed {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+
+    // 分组子项：左侧引导线 + 缩进，明确“挂”在分组之下
+    .nav-group-items {
+      position: relative;
+      margin-left: 19px;
+      padding-left: 12px;
+      border-left: 1px solid rgba(255, 255, 255, 0.09);
+
+      .nav-item {
+        margin-left: 0;
+      }
+    }
+
+    .nav-item {
+      margin: 2px 8px;
+
+      .nav-link {
+        color: $sidebar-text;
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.15s ease;
+        text-decoration: none;
+
+        i {
+          font-size: 16px;
+          width: 20px;
+          text-align: center;
+          flex-shrink: 0;
+        }
+
+        &:hover {
+          background: $sidebar-hover;
+          color: #ffffff;
+        }
+
+        &.active {
+          background: $sidebar-active;
+          color: $sidebar-text-active;
+          box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
+        }
+      }
+    }
+  }
+
+  /* ---------- 底部：工具入口 + 用户 ---------- */
+  .sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+
+    &.is-collapsed {
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px 0;
+    }
+
+    .footer-tools {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .footer-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      // bootstrap 会给 button 设置默认灰底，这里需要显式清空
+      background: transparent;
+      border: none;
+      padding: 0;
+      border-radius: 7px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: all 0.15s;
+
+      &:hover {
+        background: $sidebar-hover;
+        color: #fff;
+      }
+
+      &.active {
+        background: rgba(0, 123, 255, 0.15);
+        color: #fff;
+      }
+    }
+
+    .footer-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-grow: 1;
+      min-width: 0;
+      margin-left: 4px;
+    }
+
+    // 语言切换：暗色底适配 + 下拉向上弹出（底部空间不足）
+    .lang-switch-btn {
+      padding: 5px 8px;
+      border-radius: 7px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+
+      &:hover {
+        background: $sidebar-hover;
+        color: #fff;
+      }
+    }
+
+    .lang-switch .dropdown-menu {
+      top: auto;
+      bottom: calc(100% + 8px);
+    }
+
+    &.is-collapsed {
+      .lang-switch-btn {
+        padding: 6px;
+
+        .lang-label {
+          display: none;
+        }
+      }
+    }
+  }
+
+  /* ---------- 折叠态：仅显示图标 + 极小文字，分组以分隔线区隔 ----------
+   * 放在基础规则之后：折叠态选择器需与基础规则同级同权重时靠顺序取胜，
+   * 故 nav-item 规则统一带上 .sidebar-nav 前缀以提高权重。
+   */
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+
+    .sidebar-header {
+      justify-content: center;
+      padding: 0;
+      position: relative;
+
+      .collapse-btn {
+        position: absolute;
+        right: 4px;
+      }
+    }
+
+    .sidebar-nav {
+      .nav-group-header {
+        display: none;
+      }
+
+      // 折叠态：隐藏分组标题，用分隔线区隔各组
+      .nav-group + .nav-group {
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        margin-top: 4px;
+        padding-top: 4px;
+      }
+
+      .nav-group-items {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+      }
+
+      .nav-item {
+        margin: 2px 6px;
+
+        .nav-link {
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          padding: 8px 0 6px;
+          gap: 2px;
+
+          span {
+            font-size: 10px;
+            font-weight: 500;
+            line-height: 1.2;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 56px;
+          }
+
+          i {
+            font-size: 18px;
+            width: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(0, 123, 255, 0.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+
+  &:hover {
+    color: #ff6b6b;
+  }
+}
+
+// ============================================
+// 内容区域
+// ============================================
+.admin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: $content-bg;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow: auto;
+  padding: 16px 20px;
+  background: $content-bg;
+
+  &.full-content {
+    padding: 0;
+  }
+}
+
+// ============================================
+// 页面通用容器与页头标准
+// ============================================
+.admin-page {
+  padding: 16px 20px;
+  min-height: 100%;
+
+  // 统一页头标准：标题 + 副标题 + 可选操作区，页面无需再为页头单独写样式
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+
+    .page-header-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    h2,
+    .page-title {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: $text-primary;
+      margin: 0;
+    }
+
+    p,
+    .page-subtitle {
+      font-size: 12.5px;
+      color: $text-secondary;
+      margin: 2px 0 0 0;
+    }
+
+    .page-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// ============================================
+// 卡片组件
+// ============================================
+.admin-card {
+  background-color: $card-bg;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  margin-bottom: 16px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: $shadow;
+  }
+
+  &.card-primary { border-top: 3px solid $primary; }
+  &.card-success { border-top: 3px solid $success; }
+  &.card-info { border-top: 3px solid $info; }
+  &.card-warning { border-top: 3px solid $warning; }
+  &.card-danger { border-top: 3px solid $danger; }
+
+  .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid $border-color;
+    padding: 12px 16px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    .card-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0;
+      line-height: 1.35;
+    }
+
+    .card-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+
+      .btn-tool {
+        background: transparent;
+        color: $text-muted;
+        font-size: 13px;
+        padding: 2px 6px;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: $text-secondary;
+        }
+      }
+    }
+  }
+
+  .card-body {
+    flex: 1 1 auto;
+    padding: 14px 16px;
+  }
+
+  .card-footer {
+    padding: 10px 16px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid $border-color;
+  }
+}
+
+// ============================================
+// 统计小盒子组件
+// ============================================
+.small-box {
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  display: block;
+  margin-bottom: 16px;
+  position: relative;
+  color: #fff;
+  overflow: hidden;
+
+  > .inner {
+    padding: 15px;
+
+    h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 10px;
+      padding: 0;
+      white-space: nowrap;
+
+      sup {
+        font-size: 20px;
+        top: -0.5em;
+      }
+    }
+
+    p {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+  }
+
+  .icon {
+    color: rgba(0, 0, 0, 0.15);
+    z-index: 0;
+    transition: all 0.3s linear;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 70px;
+
+    > i {
+      font-size: 70px;
+      transition: transform 0.3s linear;
+    }
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    .icon > i {
+      transform: scale(1.1);
+    }
+  }
+
+  .small-box-footer {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    display: block;
+    padding: 8px 0;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    z-index: 10;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.15);
+      color: #fff;
+    }
+  }
+
+  // 颜色变体
+  &.bg-primary { background-color: $primary !important; }
+  &.bg-secondary { background-color: $secondary !important; }
+  &.bg-success { background-color: $success !important; }
+  &.bg-info { background-color: $info !important; }
+  &.bg-warning {
+    background-color: $warning !important;
+    color: #1f2d3d !important;
+    .small-box-footer { color: #1f2d3d; }
+  }
+  &.bg-danger { background-color: $danger !important; }
+  &.bg-dark { background-color: $dark !important; }
+}
+
+// ============================================
+// 信息盒子 (Info Box)
+// ============================================
+.info-box {
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  background-color: $card-bg;
+  display: flex;
+  margin-bottom: 16px;
+  min-height: 80px;
+
+  .info-box-icon {
+    border-radius: $border-radius 0 0 $border-radius;
+    align-items: center;
+    display: flex;
+    font-size: 1.875rem;
+    justify-content: center;
+    text-align: center;
+    width: 70px;
+    color: #fff;
+
+    > i {
+      font-size: 45px;
+    }
+
+    &.bg-primary { background-color: rgba($primary, 0.9) !important; }
+    &.bg-success { background-color: rgba($success, 0.9) !important; }
+    &.bg-info { background-color: rgba($info, 0.9) !important; }
+    &.bg-warning { background-color: rgba($warning, 0.9) !important; }
+    &.bg-danger { background-color: rgba($danger, 0.9) !important; }
+  }
+
+  .info-box-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.7;
+    flex: 1;
+    padding: 0 15px;
+  }
+
+  .info-box-text {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
+    color: $text-secondary;
+  }
+
+  .info-box-number {
+    display: block;
+    margin-top: 0.25rem;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: $text-primary;
+  }
+
+  .progress {
+    background-color: rgba(0, 0, 0, 0.08);
+    height: 2px;
+    margin: 5px 0;
+  }
+
+  .progress-description {
+    font-size: 0.75rem;
+    color: $text-secondary;
+  }
+}
+
+// ============================================
+// 时间线 (Timeline)
+// ============================================
+.timeline {
+  position: relative;
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: $border-color;
+    left: 31px;
+    margin: 0;
+    border-radius: 0.25rem;
+  }
+
+  > li {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 15px;
+
+    &::before,
+    &::after {
+      content: '';
+      display: table;
+    }
+
+    &::after {
+      clear: both;
+    }
+
+    > .timeline-item {
+      box-shadow: $shadow-sm;
+      border: 1px solid $border-color;
+      border-radius: $border-radius;
+      background-color: $card-bg;
+      color: $text-secondary;
+      margin-left: 60px;
+      margin-right: 15px;
+      padding: 0;
+      position: relative;
+
+      > .time {
+        color: $text-muted;
+        float: right;
+        padding: 10px;
+        font-size: 12px;
+      }
+
+      > .timeline-header {
+        margin: 0;
+        color: $text-primary;
+        border-bottom: 1px solid $border-color;
+        padding: 10px;
+        font-size: 15px;
+        line-height: 1.3;
+
+        > a {
+          font-weight: 600;
+          color: $primary;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      > .timeline-body {
+        padding: 10px;
+      }
+
+      > .timeline-footer {
+        padding: 10px;
+        background-color: $light;
+        border-top: 1px solid $border-color;
+      }
+    }
+
+    > .bi {
+      width: 30px;
+      height: 30px;
+      font-size: 15px;
+      line-height: 30px;
+      position: absolute;
+      color: #fff;
+      background: $secondary;
+      border-radius: 50%;
+      text-align: center;
+      left: 18px;
+      top: 0;
+    }
+  }
+}
+
+// ============================================
+// 按钮样式
+// ============================================
+.btn-admin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  text-align: center;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  user-select: none;
+  border: 1px solid transparent;
+  padding: 7px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: 8px;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba($primary, 0.25);
+  }
+
+  // 颜色变体
+  &.btn-primary {
+    color: #fff;
+    background-color: $primary;
+    border-color: $primary;
+
+    &:hover {
+      background-color: color.adjust($primary, $lightness: -7.5%);
+      border-color: color.adjust($primary, $lightness: -10%);
+    }
+  }
+
+  &.btn-success {
+    color: #fff;
+    background-color: $success;
+    border-color: $success;
+
+    &:hover {
+      background-color: color.adjust($success, $lightness: -7.5%);
+      border-color: color.adjust($success, $lightness: -10%);
+    }
+  }
+
+  &.btn-info {
+    color: #fff;
+    background-color: $info;
+    border-color: $info;
+
+    &:hover {
+      background-color: color.adjust($info, $lightness: -7.5%);
+      border-color: color.adjust($info, $lightness: -10%);
+    }
+  }
+
+  &.btn-warning {
+    color: #212529;
+    background-color: $warning;
+    border-color: $warning;
+
+    &:hover {
+      background-color: color.adjust($warning, $lightness: -7.5%);
+      border-color: color.adjust($warning, $lightness: -10%);
+    }
+  }
+
+  &.btn-danger {
+    color: #fff;
+    background-color: $danger;
+    border-color: $danger;
+
+    &:hover {
+      background-color: color.adjust($danger, $lightness: -7.5%);
+      border-color: color.adjust($danger, $lightness: -10%);
+    }
+  }
+
+  // 尺寸变体
+  &.btn-sm {
+    padding: 3px 10px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    border-radius: 6px;
+  }
+
+  &.btn-lg {
+    padding: 9px 20px;
+    font-size: 15px;
+    line-height: 1.5;
+    border-radius: 10px;
+  }
+}
+
+// 行内文字按钮（列表操作列）
+.btn-sm-link {
+  border: none;
+  background: transparent;
+  color: $primary;
+  font-size: 13px;
+  padding: 2px 4px;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover { color: color.adjust($primary, $lightness: -10%); text-decoration: underline; }
+  &:disabled { color: #c2c8d2; cursor: not-allowed; text-decoration: none; }
+
+  &.btn-danger-link {
+    color: $danger;
+    &:hover { color: color.scale($danger, $lightness: -8%); }
+  }
+}
+
+// ============================================
+// 徽章样式
+// ============================================
+.badge-admin {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 20px;
+
+  &.badge-primary { background-color: $primary; color: #fff; }
+  &.badge-secondary { background-color: $secondary; color: #fff; }
+  &.badge-success { background-color: $success; color: #fff; }
+  &.badge-info { background-color: $info; color: #fff; }
+  &.badge-warning { background-color: $warning; color: #212529; }
+  &.badge-danger { background-color: $danger; color: #fff; }
+  &.badge-light { background-color: $light; color: #212529; }
+  &.badge-dark { background-color: $dark; color: #fff; }
+}
+
+// ============================================
+// 滚动条美化
+// ============================================
+.admin-scrollbar {
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c7cd;
+    border-radius: 3px;
+    &:hover { background: #a1a7ad; }
+  }
+}
+
+.content-wrapper {
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: #c1c7cd;
+    border-radius: 3px;
+    &:hover { background: #a1a7ad; }
+  }
+}
+
+// ============================================
+// 动画效果
+// ============================================
+.admin-fade-enter-active,
+.admin-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.admin-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.admin-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+// 悬停效果
+.hover-shadow {
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+  }
+}
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+}
+
+// ============================================
+// 响应式
+// ============================================
+@media (max-width: 767.98px) {
+  .small-box {
+    text-align: center;
+
+    .icon {
+      display: none;
+    }
+  }
+
+  .info-box {
+    min-height: 60px;
+
+    .info-box-icon {
+      width: 50px;
+      font-size: 1.2rem;
+
+      > i {
+        font-size: 30px;
+      }
+    }
+
+    .info-box-content {
+      padding: 0 10px;
+    }
+
+    .info-box-number {
+      font-size: 1.2rem;
+    }
+  }
+
+  .content-wrapper,
+  .admin-page {
+    padding: 12px;
+  }
+}
