@@ -1,5 +1,6 @@
 import { request } from './base';
-import type { PageResult, TaskConfig } from '@/domain/task';
+import type { ApiResult } from './base';
+import type { PageResult, TaskConfig, DiagnoseResult } from '@/domain/task';
 import type { TaskState } from '@/base/taskConst';
 
 /** 查询任务配置 */
@@ -48,4 +49,13 @@ export async function testScript(data: {
         exitCode: number,
         log: string,
     }>('/api/task/testScript', data);
+}
+
+/**
+ * 任务健康度诊断
+ *
+ * 返回配置体检结果、运行统计、问题清单与最近执行时间线
+ */
+export async function diagnoseTask(id: number) {
+    return await request<ApiResult<DiagnoseResult>>('/api/task/diagnose', { id });
 }

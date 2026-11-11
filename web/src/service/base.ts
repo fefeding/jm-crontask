@@ -10,6 +10,21 @@ export function getRequestUrl(api: string) {
     return `${apiUrl.trim()}${config.prefix}${api}`;
 }
 
+/**
+ * 接口统一响应结构
+ *
+ * request<T> 返回的是后端的完整响应体（信封），
+ * 因此调用方应写成 request<ApiResult<具体类型>>() 才能拿到正确的类型。
+ */
+export interface ApiResult<T = any> {
+    /** 0 表示成功 */
+    ret: number;
+    /** 业务数据 */
+    data: T;
+    /** 错误信息 */
+    msg?: string;
+}
+
 export async function requestServer(url: string|AxiosRequestConfig, data?: any, option?: AxiosRequestConfig) {
     if(typeof url === 'object') {
         option = url;
@@ -29,9 +44,11 @@ export async function request<T = any>(url: string|AxiosRequestConfig, data?: an
         eventBus.publish(eventBus.AUTHTIMEOUT, { message: res.data.msg });
     }
     if(res.status !== 200) {
+        // 保留后端返回的 ret/msg，避免调用方只能拿到 statusText（如「系统错误」）
         throw {
-            ret: res.status,
-            msg: res.statusText,
+            ret: res.data?.ret ?? res.status,
+            msg: res.data?.msg || res.statusText || `请求失败(${res.status})`,
+            status: res.status,
         };
     }
     return res?.data as T;

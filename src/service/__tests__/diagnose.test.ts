@@ -54,19 +54,53 @@ function makeInstance(overrides: any = {}) {
 }
 
 describe('任务健康度诊断', () => {
-
     describe('getIntervalSeconds', () => {
         it('秒/分/时换算为秒', () => {
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.second, timeValue: '30' })).toBe(30);
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.minute, timeValue: '5' })).toBe(300);
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.hour, timeValue: '2' })).toBe(7200);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.second,
+                    timeValue: '30',
+                })
+            ).toBe(30);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.minute,
+                    timeValue: '5',
+                })
+            ).toBe(300);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.hour,
+                    timeValue: '2',
+                })
+            ).toBe(7200);
         });
 
         it('每天/每周/每月/cron 不是固定间隔，返回 0', () => {
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.day, timeValue: '10:00:00' })).toBe(0);
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.week, timeValue: '1 10:00:00' })).toBe(0);
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.month, timeValue: '15 10:00:00' })).toBe(0);
-            expect(getIntervalSeconds({ timeSize: TaskTimeSize.crontab, timeValue: '* * * * *' })).toBe(0);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.day,
+                    timeValue: '10:00:00',
+                })
+            ).toBe(0);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.week,
+                    timeValue: '1 10:00:00',
+                })
+            ).toBe(0);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.month,
+                    timeValue: '15 10:00:00',
+                })
+            ).toBe(0);
+            expect(
+                getIntervalSeconds({
+                    timeSize: TaskTimeSize.crontab,
+                    timeValue: '* * * * *',
+                })
+            ).toBe(0);
         });
     });
 
@@ -120,7 +154,11 @@ describe('任务健康度诊断', () => {
 
         it('累计重试次数并记录最近一次成功时间', () => {
             const instances = [
-                makeInstance({ id: 1, status: TaskStatus.failed, retryCount: 2 }),
+                makeInstance({
+                    id: 1,
+                    status: TaskStatus.failed,
+                    retryCount: 2,
+                }),
                 makeInstance({
                     id: 2,
                     status: TaskStatus.success,
@@ -144,41 +182,59 @@ describe('任务健康度诊断', () => {
     describe('checkConfig', () => {
         it('内联执行器给出无法强制中断的警告', () => {
             const issues = checkConfig(makeTask({ execType: TaskExecType.js }));
-            expect(issues.find(i => i.code === 'exec_inline')?.level).toBe('warn');
+            expect(issues.find(i => i.code === 'exec_inline')?.level).toBe(
+                'warn'
+            );
         });
 
         it('子进程执行器不产生内联警告', () => {
-            const issues = checkConfig(makeTask({ execType: TaskExecType.node }));
+            const issues = checkConfig(
+                makeTask({ execType: TaskExecType.node })
+            );
             expect(issues.find(i => i.code === 'exec_inline')).toBeUndefined();
         });
 
         it('脚本为空报严重问题', () => {
             const issues = checkConfig(makeTask({ script: '   ' }));
-            expect(issues.find(i => i.code === 'script_empty')?.level).toBe('error');
+            expect(issues.find(i => i.code === 'script_empty')?.level).toBe(
+                'error'
+            );
         });
 
         it('外部执行器缺少入口报严重问题', () => {
             const issues = checkConfig(
                 makeTask({ execType: TaskExecType.shell, execCommand: '' })
             );
-            expect(issues.find(i => i.code === 'command_empty')?.level).toBe('error');
+            expect(issues.find(i => i.code === 'command_empty')?.level).toBe(
+                'error'
+            );
         });
 
         it('超时时间超过执行间隔时告警', () => {
             const issues = checkConfig(
-                makeTask({ timeSize: TaskTimeSize.minute, timeValue: '1', timeout: 600 })
+                makeTask({
+                    timeSize: TaskTimeSize.minute,
+                    timeValue: '1',
+                    timeout: 600,
+                })
             );
-            expect(issues.find(i => i.code === 'timeout_gt_interval')?.level).toBe('warn');
+            expect(
+                issues.find(i => i.code === 'timeout_gt_interval')?.level
+            ).toBe('warn');
         });
 
         it('超时时间非法报严重问题', () => {
             const issues = checkConfig(makeTask({ timeout: 0 }));
-            expect(issues.find(i => i.code === 'timeout_invalid')?.level).toBe('error');
+            expect(issues.find(i => i.code === 'timeout_invalid')?.level).toBe(
+                'error'
+            );
         });
 
         it('无关注人且无全局接收人时告警无处送达', () => {
             const issues = checkConfig(makeTask({ watcher: '' }), {});
-            expect(issues.find(i => i.code === 'no_receiver')?.level).toBe('warn');
+            expect(issues.find(i => i.code === 'no_receiver')?.level).toBe(
+                'warn'
+            );
         });
 
         it('配置了全局接收人后不再提示无处送达', () => {
@@ -190,17 +246,23 @@ describe('任务健康度诊断', () => {
 
         it('环境变量不是合法 JSON 时告警', () => {
             const issues = checkConfig(makeTask({ envJson: '{bad json' }));
-            expect(issues.find(i => i.code === 'env_invalid_json')?.level).toBe('warn');
+            expect(issues.find(i => i.code === 'env_invalid_json')?.level).toBe(
+                'warn'
+            );
         });
 
         it('环境变量合法时不告警', () => {
             const issues = checkConfig(makeTask({ envJson: '{"A":"1"}' }));
-            expect(issues.find(i => i.code === 'env_invalid_json')).toBeUndefined();
+            expect(
+                issues.find(i => i.code === 'env_invalid_json')
+            ).toBeUndefined();
         });
 
         it('任务未启用时给出提示', () => {
             const issues = checkConfig(makeTask({ state: TaskState.stop }));
-            expect(issues.find(i => i.code === 'task_not_enabled')?.level).toBe('info');
+            expect(issues.find(i => i.code === 'task_not_enabled')?.level).toBe(
+                'info'
+            );
         });
 
         it('高频任务配置跳过补跑时给出提示', () => {
@@ -211,7 +273,9 @@ describe('任务健康度诊断', () => {
                     missPolicy: TaskMissPolicy.skip,
                 })
             );
-            expect(issues.find(i => i.code === 'miss_skip_fast')?.level).toBe('info');
+            expect(issues.find(i => i.code === 'miss_skip_fast')?.level).toBe(
+                'info'
+            );
         });
     });
 
@@ -219,13 +283,20 @@ describe('任务健康度诊断', () => {
         it('无运行记录时给出提示', () => {
             const stats = computeStats(makeTask(), []);
             const issues = checkRuntime(makeTask(), stats);
-            expect(issues.find(i => i.code === 'no_history')?.level).toBe('info');
+            expect(issues.find(i => i.code === 'no_history')?.level).toBe(
+                'info'
+            );
         });
 
         it('连续失败 3 次报严重问题', () => {
-            const stats = computeStats(makeTask({ consecutiveFailures: 3 }), []);
+            const stats = computeStats(
+                makeTask({ consecutiveFailures: 3 }),
+                []
+            );
             const issues = checkRuntime(makeTask(), stats);
-            expect(issues.find(i => i.code === 'consecutive_failures')?.level).toBe('error');
+            expect(
+                issues.find(i => i.code === 'consecutive_failures')?.level
+            ).toBe('error');
         });
 
         it('全部失败且样本足够时报从未成功执行', () => {
@@ -234,7 +305,9 @@ describe('任务健康度诊断', () => {
             );
             const stats = computeStats(makeTask(), instances);
             const issues = checkRuntime(makeTask(), stats);
-            expect(issues.find(i => i.code === 'never_success')?.level).toBe('error');
+            expect(issues.find(i => i.code === 'never_success')?.level).toBe(
+                'error'
+            );
         });
 
         it('成功率偏低时告警', () => {
@@ -246,7 +319,9 @@ describe('任务健康度诊断', () => {
             ];
             const stats = computeStats(makeTask(), instances);
             const issues = checkRuntime(makeTask(), stats);
-            expect(issues.find(i => i.code === 'low_success_rate')?.level).toBe('warn');
+            expect(issues.find(i => i.code === 'low_success_rate')?.level).toBe(
+                'warn'
+            );
         });
 
         it('超时比例偏高时告警', () => {
@@ -255,7 +330,9 @@ describe('任务健康度诊断', () => {
             );
             const stats = computeStats(makeTask(), instances);
             const issues = checkRuntime(makeTask(), stats);
-            expect(issues.find(i => i.code === 'high_timeout_rate')?.level).toBe('warn');
+            expect(
+                issues.find(i => i.code === 'high_timeout_rate')?.level
+            ).toBe('warn');
         });
 
         it('耗时接近超时阈值时告警', () => {
@@ -264,7 +341,9 @@ describe('任务健康度诊断', () => {
             );
             const stats = computeStats(makeTask({ timeout: 60 }), instances);
             const issues = checkRuntime(makeTask({ timeout: 60 }), stats);
-            expect(issues.find(i => i.code === 'near_timeout')?.level).toBe('warn');
+            expect(issues.find(i => i.code === 'near_timeout')?.level).toBe(
+                'warn'
+            );
         });
 
         it('存在漏跑时告警', () => {

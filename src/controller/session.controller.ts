@@ -2,6 +2,8 @@ import { Inject, Controller, All, Provide, Body, } from '@midwayjs/core';
 import { BaseController, utils } from '@cicctencent/midwayjs-base';
 import { SessionService } from '../service/session.service';
 import { UserService } from '../service/user.service';
+import { BizError } from '../errors/BizError';
+import { RET_BIZ_ERROR } from '../errors/retCode';
 //import { checkApiToken } from '../lib/decorator';
 
 @Provide()
@@ -75,16 +77,31 @@ export class SessionController extends BaseController {
                 return token;
             }
             else {
-                throw Error('登陆失败, 请确保用户名或密码正确');
+                // 用 BizError 抛出：msg 会原样返回给前端提示用户。
+                // 普通 Error 会被统一转成「系统错误」(ret:1001)，用户看不到原因。
+                throw new BizError('用户名或密码错误');
             }
         }
         else {
-            const res = await this.sessionService.loginByAccount(loginParams);
-            if(res.ret === 0 && res.data) {
+            let res: any;
+            try {
+                res = await this.sessionService.loginByAccount(loginParams);
+            }
+            catch(err: any) {
+                // 账号服务不可用（连接被拒、超时等）：转成可读的业务错误，
+                // 避免前端只拿到「系统错误」而无法提示用户。
+                this.ctx.logger?.error('[loginByAccount] 转发账号服务失败', {
+                    baseServerUrl: this.sessionService.baseServiceOption?.url,
+                    message: err?.message,
+                });
+                throw new BizError('账号服务不可用, 请稍后重试或联系管理员');
+            }
+            if(res?.ret === 0 && res.data) {
                 utils.setAuthToken(this.ctx, res.data.id);// 写入cookie
                 return res.data;
             }
-            return res;
+            // 账号服务返回业务失败（如账号或密码错误），透传其错误码与信息
+            return res || { ret: RET_BIZ_ERROR, msg: '登录失败, 请稍后重试' };
         }
     }
 }

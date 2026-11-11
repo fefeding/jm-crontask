@@ -79,30 +79,24 @@
       const nameInput = ref<HTMLInputElement | null>(null);
 
       const checkForm = () => {
-        return new Promise((resolve, reject) => {
-          if (!form.name) {
-            $toast?.warning('用户名不能为空');
-            if (nameInput.value) {
-              nameInput.value.focus();
-            }
-            return;
-          }
-          if (!form.password) {
-            $toast?.warning('密码不能为空');
-            if (passwordInput.value) {
-              passwordInput.value.focus();
-            }
-            return;
-          }
-          resolve(true)
-        })
+        if (!form.name) {
+          $toast?.warning('用户名不能为空');
+          nameInput.value?.focus();
+          return false;
+        }
+        if (!form.password) {
+          $toast?.warning('密码不能为空');
+          passwordInput.value?.focus();
+          return false;
+        }
+        return true;
       }
-      const submit = () => {
-        checkForm()
-        .then(async () => {
-          form.loading = true;
+      const submit = async () => {
+        if (!checkForm()) return;
+        form.loading = true;
+        try {
           const res = await login(form.name, form.password);
-          if(res.ret === 0) {
+          if(res?.ret === 0) {
             $toast?.success('登陆成功, 跳转中...');
 
             // 缓存
@@ -114,11 +108,17 @@
             }, 1000);
           }
           else {
-            $toast?.error(res.msg || '登陆失败');
+            $toast?.error(res?.msg || '登陆失败');
           }
-      }).finally(()=>{
-        form.loading = false;
-      });
+        }
+        catch(e: any) {
+          // 接口异常（网络错误、账号服务不可用等）必须提示用户，否则只看到按钮 loading 无反馈
+          console.error('登录失败', e);
+          $toast?.error(e?.msg || '登陆失败, 请稍后重试');
+        }
+        finally {
+          form.loading = false;
+        }
     }
 
     console.log('systemTitle', systemTitle);

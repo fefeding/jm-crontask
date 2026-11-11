@@ -196,10 +196,12 @@ export function computeStats(task: any, instances: any[]): DiagnoseStats {
 
     // 最近连续失败次数（实例已按时间倒序）
     for (const ins of instances || []) {
-        if (ins.status === TaskStatus.failed || ins.status === TaskStatus.timeout) {
+        if (
+            ins.status === TaskStatus.failed ||
+            ins.status === TaskStatus.timeout
+        ) {
             stats.recentFailStreak++;
-        }
-        else {
+        } else {
             break;
         }
     }
@@ -233,13 +235,13 @@ export function checkConfig(
             level: 'warn',
             code: 'exec_inline',
             title: '内联执行器无法强制中断',
-            detail:
-                '内联 JS 运行在服务主进程中，超时后只能把实例标记为超时，脚本本身仍在继续执行，可能长时间占用并发额度。',
+            detail: '内联 JS 运行在服务主进程中，超时后只能把实例标记为超时，脚本本身仍在继续执行，可能长时间占用并发额度。',
             suggestion: '建议改用「子进程 JS」执行器，超时后可真实终止进程。',
         });
     }
 
-    const isInlineScript = execType === TaskExecType.js || execType === TaskExecType.node;
+    const isInlineScript =
+        execType === TaskExecType.js || execType === TaskExecType.node;
     if (isInlineScript && !script) {
         issues.push({
             level: 'error',
@@ -267,8 +269,7 @@ export function checkConfig(
             detail: '超时时间为 0 或负数，任务将无法正常结束。',
             suggestion: '请设置一个大于 0 的超时时间（秒）。',
         });
-    }
-    else if (timeout > 86400) {
+    } else if (timeout > 86400) {
         issues.push({
             level: 'warn',
             code: 'timeout_too_long',
@@ -295,9 +296,9 @@ export function checkConfig(
             level: 'warn',
             code: 'no_receiver',
             title: '告警无处送达',
-            detail:
-                '任务未配置关注人，且系统未配置全局接收人，任务失败时告警无法送达任何人。',
-            suggestion: '请配置任务关注人，或在 notify 配置中设置全局 receivers。',
+            detail: '任务未配置关注人，且系统未配置全局接收人，任务失败时告警无法送达任何人。',
+            suggestion:
+                '请配置任务关注人，或在 notify 配置中设置全局 receivers。',
         });
     }
 
@@ -311,7 +312,10 @@ export function checkConfig(
         });
     }
 
-    if (Number(task?.maxRetry || 0) > 0 && Number(task?.retryInterval || 0) <= 0) {
+    if (
+        Number(task?.maxRetry || 0) > 0 &&
+        Number(task?.retryInterval || 0) <= 0
+    ) {
         issues.push({
             level: 'warn',
             code: 'retry_interval_invalid',
@@ -325,14 +329,14 @@ export function checkConfig(
     if (envJson) {
         try {
             JSON.parse(envJson);
-        }
-        catch (e) {
+        } catch (e) {
             issues.push({
                 level: 'warn',
                 code: 'env_invalid_json',
                 title: '环境变量不是合法 JSON',
                 detail: '注入给任务的环境变量无法被解析，执行时会被忽略。',
-                suggestion: '请修正为合法的 JSON 字符串，例如 {"NODE_ENV":"production"}。',
+                suggestion:
+                    '请修正为合法的 JSON 字符串，例如 {"NODE_ENV":"production"}。',
             });
         }
     }
@@ -399,14 +403,14 @@ export function checkRuntime(task: any, stats: DiagnoseStats): DiagnoseIssue[] {
             detail: `最近 ${stats.finished} 次执行全部失败或超时，没有任何一次成功。`,
             suggestion: '请查看日志确认脚本或环境是否存在根本性问题。',
         });
-    }
-    else if (stats.finished >= 5 && stats.successRate < 60) {
+    } else if (stats.finished >= 5 && stats.successRate < 60) {
         issues.push({
             level: 'warn',
             code: 'low_success_rate',
             title: '成功率偏低',
             detail: `最近 ${stats.finished} 次执行成功率为 ${stats.successRate}%。`,
-            suggestion: '建议查看失败实例的日志，确认是否为偶发网络或数据问题。',
+            suggestion:
+                '建议查看失败实例的日志，确认是否为偶发网络或数据问题。',
         });
     }
 
@@ -429,7 +433,9 @@ export function checkRuntime(task: any, stats: DiagnoseStats): DiagnoseIssue[] {
             level: 'warn',
             code: 'near_timeout',
             title: '耗时接近超时阈值',
-            detail: `P95 耗时 ${stats.p95Duration}ms，已达超时阈值（${timeoutMs}ms）的 ${Math.round(
+            detail: `P95 耗时 ${
+                stats.p95Duration
+            }ms，已达超时阈值（${timeoutMs}ms）的 ${Math.round(
                 (stats.p95Duration / timeoutMs) * 100
             )}%。`,
             suggestion: '建议适当调大超时时间，避免业务高峰期被强制中断。',
@@ -496,7 +502,9 @@ export function buildSummary(
     if (errors) parts.push(`${errors} 个严重问题`);
     if (warns) parts.push(`${warns} 个警告`);
     const first = issues.find(i => i.level === 'error') || issues[0];
-    return `健康分 ${score} 分，发现 ${parts.join('、')}，最需关注：${first?.title || ''}。`;
+    return `健康分 ${score} 分，发现 ${parts.join('、')}，最需关注：${
+        first?.title || ''
+    }。`;
 }
 
 /**
