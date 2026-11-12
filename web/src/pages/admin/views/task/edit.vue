@@ -129,14 +129,26 @@
                         </div>
                         <div class="col-md-8">
                             <input 
-                                v-if="taskData.execType != TaskExecType.js"
+                                v-if="needExecCommand"
                                 type="text" 
                                 class="form-control"
                                 v-model="taskData.execCommand"
-                                placeholder="脚本路径或命令行"
+                                :placeholder="execCommandPlaceholder"
                             >
-                            <small v-else class="text-muted text-warning">
+                            <small v-if="taskData.execType == TaskExecType.js" class="text-muted text-warning">
                                 内联模式在服务主进程中执行，无法强制中断脚本；建议改用子进程 JS 模式
+                            </small>
+                            <small v-else-if="taskData.execType == TaskExecType.node" class="text-muted">
+                                子进程 JS 模式无需填写执行入口，脚本写在下方「脚本」框即可
+                            </small>
+                            <small v-else-if="taskData.execType == TaskExecType.shell" class="text-muted">
+                                填写 Shell 命令或脚本路径（如 <code>/data/scripts/x.sh</code>）；留空则执行下方「脚本」框内容
+                            </small>
+                            <small v-else-if="taskData.execType == TaskExecType.python" class="text-muted">
+                                填写 Python 脚本路径（如 <code>/data/scripts/x.py</code>）；留空则执行下方「脚本」框内容
+                            </small>
+                            <small v-else class="text-muted">
+                                填写完整命令行（由系统 shell 直接执行，可混用任意命令/语言）
                             </small>
                         </div>
                     </div>
@@ -214,30 +226,96 @@
             <div class="mb-3">
                 <label class="form-label">脚本</label>
                 <VAceEditor
-                    v-if="taskData.execType == TaskExecType.js || taskData.execType == TaskExecType.node"
+                    v-if="isScriptEditorVisible"
                     v-model:value="taskScript" 
                     :readonly="false"
                     :wrap="false"
                     :print-margin="false"
-                    lang="javascript"
+                    :lang="scriptLang"
                     theme="chrome"
                     style="height:800px; width:100%;"
                 />
-                <small v-else class="text-muted">当前执行器使用外部脚本/命令，无需填写脚本内容</small>
+                <small v-if="taskData.execType == TaskExecType.command" class="text-muted">
+                    外部命令模式直接在上方「执行入口」填写命令行，无需脚本内容
+                </small>
+                <small v-else class="text-muted">
+                    语法高亮：当前为 {{ scriptLang === 'python' ? 'Python' : scriptLang === 'sh' ? 'Shell' : 'JavaScript' }}
+                </small>
             </div>
+
+            <!-- 脚本与执行器编写教程 -->
+            <details class="mb-3 border rounded p-2 bg-light">
+                <summary class="fw-semibold" style="cursor:pointer;">📘 脚本与执行器编写教程（点击展开）</summary>
+                <div class="mt-2 small">
+                    <p class="mb-1"><b>一、执行器类型怎么选</b></p>
+                    <ul class="mb-2">
+                        <li><b>子进程 JS（node，推荐）</b>：脚本写在下方「脚本」框，系统在独立子进程执行，崩溃隔离、超时可被看门狗真实中断。无需填写「执行入口」。</li>
+                        <li><b>内联 JS（js）</b>：同样写在「脚本」框，但在服务主进程内执行，超时只能标记、无法强制杀进程，仅兼容历史任务。</li>
+                        <li><b>Shell 脚本</b>：在「执行入口」填 Shell 命令或脚本路径（如 <code>/data/scripts/x.sh</code>）；也可留空，直接把脚本写在下方「脚本」框。</li>
+                        <li><b>Python 脚本</b>：在「执行入口」填 <code>.py</code> 路径（如 <code>/data/scripts/x.py</code>）；也可留空，直接把 Python 代码写在下方「脚本」框。</li>
+                        <li><b>外部命令</b>：在「执行入口」填完整命令行（由系统 shell 执行，可混用任意命令/语言），如 <code>curl -s https://example.com | python3 -</code>。</li>
+                    </ul>
+
+                    <p class="mb-1"><b>二、JS 脚本（node / js）可用全局</b></p>
+                    <ul class="mb-2">
+                        <li><code>console.log / info / warn / error</code>：输出日志（显示在「试运行」日志面板，上限 512KB）。</li>
+                        <li><code>request(url, data, option)</code>：HTTP 请求助手（POST，默认超时 30s），返回 <code>res.data</code>。</li>
+                        <li><code>sleep(ms)</code>：异步等待毫秒。</li>
+                        <li><code>task</code>：当前任务上下文 <code>{ id, name, description, timeSize, timeValue }</code>。</li>
+                        <li><code>modules.axios / modules.moment / modules.path</code>：已注入的常用库（<code>modules.axios</code> 可 <code>.create({ timeout })</code> 自定义超时）。</li>
+                        <li><code>require('模块名')</code>：仅限白名单内的模块。</li>
+                    </ul>
+
+                    <p class="mb-1"><b>三、示例：调用接口并打日志（node）</b></p>
+                    <pre class="bg-white border p-2 mb-2" style="white-space:pre-wrap;">const res = await request('https://api.example.com/data');
+console.log('code', res.code, 'size', JSON.stringify(res).length);
+if (res.code !== 0) throw res;</pre>
+
+                    <p class="mb-1"><b>四、示例：用 axios 拉取 RSS（node）</b></p>
+                    <pre class="bg-white border p-2 mb-2" style="white-space:pre-wrap;">const client = modules.axios.create({ timeout: 30000 });
+const { data } = await client.get('https://api.aigcwhere.com/rss/all', { responseType: 'text' });
+console.log('bytes', data.length);</pre>
+
+                    <p class="mb-1"><b>五、Shell / Python / 命令的可用环境变量</b></p>
+                    <ul class="mb-2">
+                        <li><code>TASK_ID</code> / <code>TASK_NAME</code> / <code>INSTANCE_ID</code>：当前任务与实例信息。</li>
+                        <li>继承服务进程的全部环境变量；可在「环境变量(JSON)」中追加自定义变量。</li>
+                    </ul>
+
+                    <p class="mb-1"><b>六、超时与中断 &amp; 注意事项</b></p>
+                    <ul class="mb-0">
+                        <li>「超时时间(秒)」到点后，子进程模式（node/shell/python/command）会被看门狗强制终止；内联 JS 仅标记为超时、无法强杀。</li>
+                        <li>所有脚本/命令在<b>执行服务器本机</b>运行，需确保对应运行时（node / python3 / bash）已安装、脚本路径可达、且网络出网正常。</li>
+                    </ul>
+                </div>
+            </details>
 
             <div class="mb-3">
-                <button type="button" class="btn btn-outline-primary me-2" @click="testRun()" :disabled="testing">
-                    {{ testing ? '试运行中...' : '试运行' }}
-                </button>
-                <span v-if="testResult" :class="testResult.success ? 'text-success' : 'text-danger'">
-                    {{ testResult.success ? '执行成功' : (testResult.message || '执行失败') }}
-                    <span v-if="testResult.duration"> （耗时 {{ testResult.duration }}ms）</span>
-                </span>
-            </div>
+                <div class="d-flex align-items-center flex-wrap mb-2">
+                    <button type="button" class="btn btn-outline-primary me-2" @click="testRun()" :disabled="testing">
+                        {{ testing ? '试运行中...' : '试运行' }}
+                    </button>
+                    <span v-if="testResult" class="badge me-2" :class="testBadgeClass">{{ testBadgeText }}</span>
+                    <span v-if="testResult && testResult.duration" class="text-muted me-2">耗时 {{ testResult.duration }}ms</span>
+                    <span v-if="testResult && testResult.exitCode !== undefined" class="text-muted">退出码 {{ testResult.exitCode }}</span>
+                </div>
 
-            <div v-if="testResult && testResult.log" class="mb-3">
-                <pre class="border rounded p-2 bg-light" style="max-height:320px; overflow:auto; white-space:pre-wrap">{{ testResult.log }}</pre>
+                <div v-if="testResult && testResult.message" :class="testResult.success ? 'text-success' : 'text-danger'">
+                    {{ testResult.message }}
+                </div>
+
+                <div v-if="testResult && testResult.log" class="mt-2">
+                    <div class="form-text mb-1">执行日志（脚本内的 console 输出与错误堆栈，用于排查问题）：</div>
+                    <div class="log-box border rounded p-2 bg-light">
+                        <div
+                            v-for="(line, i) in testLogLines"
+                            :key="i"
+                            class="log-line"
+                            :class="logLineClass(line)"
+                        >{{ line }}</div>
+                    </div>
+                </div>
+                <div v-else-if="testResult" class="text-muted mt-2">本次执行没有产生日志输出。</div>
             </div>
             
             <div class="mb-3">
@@ -264,6 +342,19 @@
 /* 自定义 Bootstrap 样式调整 */
 .form-label {
     font-weight: 600;
+}
+
+/* 试运行机制日志面板 */
+.log-box {
+    max-height: 360px;
+    overflow: auto;
+    font-family: var(--bs-font-monospace, monospace);
+}
+.log-line {
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .card {
@@ -437,9 +528,8 @@ const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastTyp
             $toast?.error('每月执行格式应为 "几号 HH:mm:ss"，如 "15 10:00:00"');
             return false;
         }
-        // 外部执行器必须填写入口
-        if(taskData.value.execType != TaskExecType.js && !taskData.value.execCommand) {
-            $toast?.error('使用外部执行器时必须填写执行入口');
+        // 执行器入口校验（node/js 用脚本框，shell/python/command 需执行入口或脚本）
+        if(!validateExecEntry()) {
             return false;
         }
         taskData.value.script = taskScript.value || '';
@@ -451,11 +541,75 @@ const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastTyp
     }
 
     /**
+     * 是否显示「执行入口」输入框
+     * node / js 不需要；shell / python / command 需要
+     */
+    const needExecCommand = computed(() => {
+        const t = taskData.value.execType;
+        return t === TaskExecType.shell || t === TaskExecType.python || t === TaskExecType.command;
+    });
+
+    /** 是否展示脚本编辑器（command 模式无需脚本内容） */
+    const isScriptEditorVisible = computed(() => {
+        const t = taskData.value.execType;
+        return t === TaskExecType.js || t === TaskExecType.node
+            || t === TaskExecType.shell || t === TaskExecType.python;
+    });
+
+    /** 脚本编辑器语法高亮语言 */
+    const scriptLang = computed(() => {
+        const t = taskData.value.execType;
+        if (t === TaskExecType.python) return 'python';
+        if (t === TaskExecType.shell) return 'sh';
+        return 'javascript';
+    });
+
+    /** 执行入口占位提示 */
+    const execCommandPlaceholder = computed(() => {
+        switch (taskData.value.execType) {
+            case TaskExecType.shell: return 'Shell 命令或脚本路径，如 /data/scripts/x.sh';
+            case TaskExecType.python: return 'Python 脚本路径，如 /data/scripts/x.py';
+            case TaskExecType.command: return '完整命令行，如 curl -s https://example.com | python3 -';
+            default: return '脚本路径或命令行';
+        }
+    });
+
+    /**
+     * 执行器入口校验：
+     * - js / node：必须填写「脚本」框
+     * - shell / python：脚本框 或 执行入口 至少填一项
+     * - command：必须填写「执行入口」
+     */
+    function validateExecEntry(): boolean {
+        const t = taskData.value.execType;
+        const script = (taskScript.value || '').trim();
+        const cmd = (taskData.value.execCommand || '').trim();
+        if (t === TaskExecType.js || t === TaskExecType.node) {
+            if (!script) {
+                $toast?.error(t === TaskExecType.node
+                    ? '子进程 JS 模式需在「脚本」框中填写 JS 代码'
+                    : '内联 JS 模式需在「脚本」框中填写 JS 代码');
+                return false;
+            }
+        } else if (t === TaskExecType.command) {
+            if (!cmd) {
+                $toast?.error('外部命令模式必须在「执行入口」填写命令行');
+                return false;
+            }
+        } else if (t === TaskExecType.shell || t === TaskExecType.python) {
+            if (!cmd && !script) {
+                $toast?.error('Shell / Python 模式需填写「脚本」或「执行入口」至少一项');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 试运行脚本，不保存配置
      */
     async function testRun() {
-        if(taskData.value.execType != TaskExecType.js && !taskData.value.execCommand) {
-            $toast?.error('使用外部执行器时必须填写执行入口');
+        if(!validateExecEntry()) {
             return false;
         }
         testing.value = true;
@@ -470,13 +624,52 @@ const $toast = instance?.appContext.config?.globalProperties?.$toast as ToastTyp
                 envJson: taskData.value.envJson,
             });
         }
-        catch(e) {
-            $toast?.error('试运行失败');
+        catch(e: any) {
+            // 接口调用本身失败（网络错误 / 后端 500 等）：把错误也放进结果面板，
+            // 避免用户只看到一个“试运行失败”的 toast 而看不到任何排查信息
+            testResult.value = {
+                success: false,
+                status: 'error',
+                message: (e && e.message) || '调用试运行接口失败',
+                duration: 0,
+                exitCode: -1,
+                log: '[error] 调用试运行接口失败：' + ((e && e.message) || String(e)),
+            };
+            $toast?.error('试运行接口调用失败');
         }
         finally {
             testing.value = false;
         }
     }
+
+    // 试运行日志按行拆分，便于逐行着色
+    const testLogLines = computed<string[]>(() => {
+        const log = testResult.value?.log || '';
+        return log.split('\n');
+    });
+
+    // 日志行着色：错误红、警告黄、其余默认
+    function logLineClass(line: string) {
+        if (/\[error\]/i.test(line)) return 'text-danger';
+        if (/\[warn\]/i.test(line)) return 'text-warning';
+        return '';
+    }
+
+    // 状态徽标文案与配色
+    const testBadgeText = computed<string>(() => {
+        const r = testResult.value;
+        if (!r) return '';
+        if (r.status === 'timeout') return '超时';
+        if (r.status === 'error') return '接口错误';
+        return r.success ? '成功' : '失败';
+    });
+    const testBadgeClass = computed<string>(() => {
+        const r = testResult.value;
+        if (!r) return 'bg-secondary';
+        if (r.status === 'timeout') return 'bg-warning text-dark';
+        if (r.status === 'error') return 'bg-danger';
+        return r.success ? 'bg-success' : 'bg-danger';
+    });
 
     // 执行方式列表
     const TimeTypeOptions = computed(()=>{

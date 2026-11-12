@@ -30,8 +30,21 @@ export async function runTask(id: number) {
     return await request('/api/task/run', { id });
 }
 
+/** 试运行返回结果（接口内层 data，request 返回的是 {ret,msg,data} 信封） */
+export interface TestScriptResult {
+    success: boolean;
+    status: string;
+    message: string;
+    duration: number;
+    exitCode: number;
+    log: string;
+}
+
 /**
  * 试运行脚本，不落库，便于编写任务时自测
+ *
+ * 注意：request() 统一返回后端信封 {ret,msg,data}，这里解包出 data，
+ * 否则调用方拿到的是信封对象，testResult.log / .success 等字段会取不到。
  */
 export async function testScript(data: {
     script: string,
@@ -41,14 +54,8 @@ export async function testScript(data: {
     workDir?: string,
     envJson?: string,
 }) {
-    return await request<{
-        success: boolean,
-        status: string,
-        message: string,
-        duration: number,
-        exitCode: number,
-        log: string,
-    }>('/api/task/testScript', data);
+    const res = await request<ApiResult<TestScriptResult>>('/api/task/testScript', data);
+    return res.data;
 }
 
 /**
