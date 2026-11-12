@@ -1,54 +1,62 @@
 /**
  * 管理后台主题样式
  *
- * 布局与视觉对齐 work 工作台（深色分组侧边栏 + 无顶栏全高内容区 + 统一页头标准），
- * 主色沿用管理端既有的 bootstrap 蓝，保证与页面内 bootstrap 组件（按钮/表格/弹窗）一致。
+ * 视觉基调：靛蓝主色 + 深墨蓝渐变侧边栏 + 浅冷灰内容区，
+ * 沿用「深色分组侧边栏 + 无顶栏全高内容区 + 统一页头标准」的布局。
+ *
+ * 换色入口：只需改下面「颜色变量」区；主色同时通过 .admin-layout 上的
+ * --bs-* 变量覆盖 Bootstrap 组件（btn-primary / bg-primary / nav-tabs /
+ * form-control focus 等），避免主题色与框架默认蓝割裂。
  */
 @use 'sass:color';
 
 // ============================================
-// 颜色变量
+// 颜色变量（主题入口：换色只改这里）
 // ============================================
-$primary: #007bff;
-$secondary: #6c757d;
-$success: #28a745;
-$info: #17a2b8;
-$warning: #ffc107;
-$danger: #dc3545;
-$light: #f8f9fa;
-$dark: #343a40;
+$primary: #4b62e8;
+$primary-light: #7385f3;
+$primary-dark: #3a4fd0;
+$secondary: #64748b;
+$success: #10b981;
+$info: #38a3f1;
+$warning: #f59e0b;
+$danger: #ef4444;
+$light: #f1f5f9;
+$dark: #1e293b;
 
 // 侧边栏
-$sidebar-bg: #1a2332;
-$sidebar-bg-light: #243044;
-$sidebar-hover: rgba(255, 255, 255, 0.08);
-$sidebar-active: $primary;
-$sidebar-text: #8b95a5;
+$sidebar-bg: #141d33;
+$sidebar-bg-to: #1b2742;
+$sidebar-bg-light: #24324f;
+$sidebar-hover: rgba(255, 255, 255, 0.07);
+$sidebar-active: rgba($primary, 0.18);
+$sidebar-text: #98a5bb;
 $sidebar-text-active: #ffffff;
+$sidebar-border: rgba(255, 255, 255, 0.07);
 
 // 内容区域
-$content-bg: #f5f6f8;
+$content-bg: #f6f8fc;
 $card-bg: #ffffff;
 $header-bg: #ffffff;
-$border-color: #e4e7ec;
-$border-radius: 10px;
+$border-color: #e7ecf4;
+$border-radius: 14px;
 
 // 文字
-$text-primary: #1e2a3a;
-$text-secondary: #5f6b7a;
-$text-muted: #8b95a5;
+$text-primary: #1b2437;
+$text-secondary: #5c6b82;
+$text-muted: #94a3b8;
 
-// 阴影
-$shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
-$shadow: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
-$shadow-lg: 0 4px 12px rgba(16, 24, 40, 0.1);
+// 阴影（更柔和、按层级递进）
+$shadow-sm: 0 1px 2px rgba(16, 32, 64, 0.04), 0 1px 3px rgba(16, 32, 64, 0.03);
+$shadow: 0 4px 12px rgba(16, 32, 64, 0.07), 0 1px 3px rgba(16, 32, 64, 0.05);
+$shadow-lg: 0 12px 28px rgba(16, 32, 64, 0.12);
 
 // ============================================
 // 布局变量
 // ============================================
 // 管理端底部比工作台多一个语言切换入口，故侧边栏略宽一档，保证用户名不被截断
-$sidebar-width: 240px;
-$sidebar-collapsed-width: 64px;
+$sidebar-width: 248px;
+$sidebar-collapsed-width: 68px;
 
 // ============================================
 // 全局样式
@@ -62,6 +70,29 @@ $sidebar-collapsed-width: 64px;
   display: flex;
   height: 100vh;
   overflow: hidden;
+
+  // 同步覆盖 Bootstrap 组件变量：按钮、徽章、标签页、表单焦点等跟随主题主色，
+  // 避免出现「主题已换色、btn-primary 仍是 bootstrap 默认蓝」的割裂。
+  --bs-primary: #{$primary};
+  --bs-primary-rgb: 75, 98, 232;
+  --bs-secondary: #{$secondary};
+  --bs-secondary-rgb: 100, 116, 139;
+  --bs-success: #{$success};
+  --bs-success-rgb: 16, 185, 129;
+  --bs-info: #{$info};
+  --bs-info-rgb: 56, 163, 241;
+  --bs-warning: #{$warning};
+  --bs-warning-rgb: 245, 158, 11;
+  --bs-danger: #{$danger};
+  --bs-danger-rgb: 239, 68, 68;
+  --bs-link-color: #{$primary};
+  --bs-link-hover-color: #{$primary-dark};
+  --bs-border-radius: 10px;
+  --bs-border-radius-lg: #{$border-radius};
+
+  // 供页面 scoped 样式引用：换色只需改本文件的 sass 变量
+  --admin-primary: #{$primary};
+  --admin-line: #{$border-color};
 }
 
 // ============================================
@@ -70,20 +101,21 @@ $sidebar-collapsed-width: 64px;
 .admin-sidebar {
   width: $sidebar-width;
   height: 100vh;
-  background: $sidebar-bg;
+  background: linear-gradient(180deg, $sidebar-bg 0%, $sidebar-bg-to 100%);
   color: $sidebar-text;
   transition: width 0.25s ease;
   flex-shrink: 0;
+  border-right: 1px solid $sidebar-border;
 
   /* ---------- 品牌区 ---------- */
   .sidebar-header {
-    height: 56px;
+    height: 66px;
     padding: 0 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid $sidebar-border;
     flex-shrink: 0;
 
     .brand-link {
@@ -96,17 +128,20 @@ $sidebar-collapsed-width: 64px;
     }
 
     .brand-image {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      padding: 3px;
+      border-radius: 10px;
       object-fit: contain;
       flex-shrink: 0;
+      background: linear-gradient(135deg, $primary-light, $primary-dark);
+      box-shadow: 0 2px 8px rgba($primary, 0.4);
     }
 
     .logo-text {
       font-size: 16px;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -142,7 +177,7 @@ $sidebar-collapsed-width: 64px;
 
     // 一级常驻项：与下方分组以分隔线区隔
     .nav-top-items {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid $sidebar-border;
       margin: 0 0 6px;
       padding-bottom: 6px;
     }
@@ -169,7 +204,7 @@ $sidebar-collapsed-width: 64px;
       }
 
       &.active {
-        color: $primary;
+        color: $primary-light;
       }
 
       // 左侧短竖条装饰，强调“分区”语义
@@ -214,7 +249,7 @@ $sidebar-collapsed-width: 64px;
       position: relative;
       margin-left: 19px;
       padding-left: 12px;
-      border-left: 1px solid rgba(255, 255, 255, 0.09);
+      border-left: 1px solid $sidebar-border;
 
       .nav-item {
         margin-left: 0;
@@ -225,15 +260,16 @@ $sidebar-collapsed-width: 64px;
       margin: 2px 8px;
 
       .nav-link {
+        position: relative;
         color: $sidebar-text;
         padding: 9px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 13.5px;
         font-weight: 500;
         display: flex;
         align-items: center;
         gap: 10px;
-        transition: all 0.15s ease;
+        transition: background 0.18s ease, color 0.18s ease;
         text-decoration: none;
 
         i {
@@ -248,10 +284,26 @@ $sidebar-collapsed-width: 64px;
           color: #ffffff;
         }
 
+        // 激活项：柔和的半透明渐变底 + 左侧渐变竖条，替代整块实心亮蓝
         &.active {
-          background: $sidebar-active;
+          background: linear-gradient(90deg, rgba($primary, 0.26) 0%, rgba($primary, 0.08) 100%);
           color: $sidebar-text-active;
-          box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
+
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 18px;
+            border-radius: 0 3px 3px 0;
+            background: linear-gradient(180deg, $primary-light, $primary);
+          }
+
+          i {
+            color: $primary-light;
+          }
         }
       }
     }
@@ -262,8 +314,8 @@ $sidebar-collapsed-width: 64px;
     display: flex;
     align-items: center;
     gap: 2px;
-    padding: 8px 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 10px 10px;
+    border-top: 1px solid $sidebar-border;
     flex-shrink: 0;
 
     &.is-collapsed {
@@ -301,7 +353,7 @@ $sidebar-collapsed-width: 64px;
       }
 
       &.active {
-        background: rgba(0, 123, 255, 0.15);
+        background: rgba($primary, 0.24);
         color: #fff;
       }
     }
@@ -369,7 +421,7 @@ $sidebar-collapsed-width: 64px;
 
       // 折叠态：隐藏分组标题，用分隔线区隔各组
       .nav-group + .nav-group {
-        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        border-top: 1px solid $sidebar-border;
         margin-top: 4px;
         padding-top: 4px;
       }
@@ -412,10 +464,11 @@ $sidebar-collapsed-width: 64px;
 }
 
 .user-avatar {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: rgba(0, 123, 255, 0.6);
+  background: linear-gradient(135deg, $primary-light, $primary-dark);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12), 0 2px 6px rgba($primary, 0.35);
   color: #fff;
   display: flex;
   align-items: center;
@@ -441,7 +494,7 @@ $sidebar-collapsed-width: 64px;
   flex-shrink: 0;
 
   &:hover {
-    color: #ff6b6b;
+    color: color.adjust($danger, $lightness: 8%);
   }
 }
 
@@ -459,11 +512,15 @@ $sidebar-collapsed-width: 64px;
 .content-wrapper {
   flex: 1;
   overflow: auto;
-  padding: 16px 20px;
-  background: $content-bg;
+  padding: 22px 26px;
+  // 顶部一道极淡的主色光晕，让大面积浅灰底不显单调
+  background:
+    radial-gradient(1100px 360px at 55% -190px, rgba($primary, 0.055), transparent 72%),
+    $content-bg;
 
   &.full-content {
     padding: 0;
+    background: $content-bg;
   }
 }
 
@@ -471,44 +528,62 @@ $sidebar-collapsed-width: 64px;
 // 页面通用容器与页头标准
 // ============================================
 .admin-page {
-  padding: 16px 20px;
+  padding: 22px 26px;
   min-height: 100%;
+}
 
-  // 统一页头标准：标题 + 副标题 + 可选操作区，页面无需再为页头单独写样式
-  .page-header {
+// 统一页头标准：标题 + 副标题 + 可选操作区，页面无需再为页头单独写样式。
+// 提取为顶层选择器，仪表盘等自定义根容器也能直接复用（不必套 .admin-page）。
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  .page-header-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  h2,
+  .page-title {
+    position: relative;
+    padding-left: 13px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    line-height: 1.35;
+    color: $text-primary;
+    margin: 0;
+
+    // 标题左侧渐变竖条，强化页面层级
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 18px;
+      border-radius: 3px;
+      background: linear-gradient(180deg, $primary-light, $primary);
+    }
+  }
+
+  p,
+  .page-subtitle {
+    padding-left: 13px;
+    font-size: 13px;
+    color: $text-secondary;
+    margin: 4px 0 0 0;
+  }
+
+  .page-header-actions {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    justify-content: space-between;
-    margin-bottom: 14px;
-
-    .page-header-main {
-      flex: 1;
-      min-width: 0;
-    }
-
-    h2,
-    .page-title {
-      font-size: 17px;
-      font-weight: 600;
-      line-height: 1.35;
-      color: $text-primary;
-      margin: 0;
-    }
-
-    p,
-    .page-subtitle {
-      font-size: 12.5px;
-      color: $text-secondary;
-      margin: 2px 0 0 0;
-    }
-
-    .page-header-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
   }
 }
 
@@ -520,13 +595,13 @@ $sidebar-collapsed-width: 64px;
   border: 1px solid $border-color;
   border-radius: $border-radius;
   box-shadow: $shadow-sm;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
   word-wrap: break-word;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 
   &:hover {
     box-shadow: $shadow;
@@ -541,7 +616,7 @@ $sidebar-collapsed-width: 64px;
   .card-header {
     background-color: transparent;
     border-bottom: 1px solid $border-color;
-    padding: 12px 16px;
+    padding: 14px 18px;
     position: relative;
     display: flex;
     align-items: center;
@@ -580,13 +655,39 @@ $sidebar-collapsed-width: 64px;
 
   .card-body {
     flex: 1 1 auto;
-    padding: 14px 16px;
+    padding: 16px 18px;
   }
 
   .card-footer {
-    padding: 10px 16px;
-    background-color: rgba(0, 0, 0, 0.02);
+    padding: 12px 18px;
+    background-color: #fafbfe;
     border-top: 1px solid $border-color;
+  }
+}
+
+// 页面内直接使用的 Bootstrap 原生 .card：补齐统一的圆角/边框/阴影/内距
+// （.admin-card 是自定义卡片，两者互不干扰）
+.admin-layout .card:not(.admin-card) {
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  box-shadow: $shadow-sm;
+  background-color: $card-bg;
+
+  > .card-header {
+    background-color: $card-bg;
+    border-bottom: 1px solid $border-color;
+    padding: 14px 18px;
+    font-weight: 600;
+  }
+
+  > .card-body {
+    padding: 16px 18px;
+  }
+
+  > .card-footer {
+    background-color: #fafbfe;
+    border-top: 1px solid $border-color;
+    padding: 12px 18px;
   }
 }
 
@@ -595,20 +696,33 @@ $sidebar-collapsed-width: 64px;
 // ============================================
 .small-box {
   border-radius: $border-radius;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow;
   display: block;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   position: relative;
   color: #fff;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  // 顶部一道细高光，配合斜向渐变让色块更通透
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.32);
+    z-index: 1;
+    pointer-events: none;
+  }
 
   > .inner {
-    padding: 15px;
+    padding: 18px 20px;
 
     h3 {
       font-size: 2rem;
       font-weight: 700;
-      margin: 0 0 10px;
+      letter-spacing: -0.5px;
+      margin: 0 0 8px;
       padding: 0;
       white-space: nowrap;
 
@@ -619,52 +733,65 @@ $sidebar-collapsed-width: 64px;
     }
 
     p {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
       margin: 0;
     }
   }
 
   .icon {
-    color: rgba(0, 0, 0, 0.15);
+    color: rgba(255, 255, 255, 0.22);
     z-index: 0;
     transition: all 0.3s linear;
     position: absolute;
-    right: 15px;
-    top: 15px;
-    font-size: 70px;
+    right: 12px;
+    top: 10px;
+    font-size: 76px;
 
     > i {
-      font-size: 70px;
+      font-size: 76px;
       transition: transform 0.3s linear;
     }
   }
 
   &:hover {
     text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
 
     .icon > i {
-      transform: scale(1.1);
+      transform: scale(1.08);
     }
   }
 
   .small-box-footer {
-    background-color: rgba(0, 0, 0, 0.1);
-    color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(0, 0, 0, 0.08);
+    color: rgba(255, 255, 255, 0.9);
     display: block;
-    padding: 8px 0;
+    padding: 9px 0;
     position: relative;
     text-align: center;
     text-decoration: none;
     z-index: 10;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.15);
+      background-color: rgba(0, 0, 0, 0.16);
       color: #fff;
     }
   }
 
-  // 颜色变体
+  // 颜色变体：统一叠加斜向高光，形成有层次的渐变而非纯色块
+  &.bg-primary,
+  &.bg-secondary,
+  &.bg-success,
+  &.bg-info,
+  &.bg-warning,
+  &.bg-danger,
+  &.bg-dark {
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.12)) !important;
+  }
+
   &.bg-primary { background-color: $primary !important; }
   &.bg-secondary { background-color: $secondary !important; }
   &.bg-success { background-color: $success !important; }
@@ -672,6 +799,7 @@ $sidebar-collapsed-width: 64px;
   &.bg-warning {
     background-color: $warning !important;
     color: #1f2d3d !important;
+    .icon { color: rgba(0, 0, 0, 0.13); }
     .small-box-footer { color: #1f2d3d; }
   }
   &.bg-danger { background-color: $danger !important; }
@@ -850,6 +978,52 @@ $sidebar-collapsed-width: 64px;
 }
 
 // ============================================
+// Bootstrap 组件换色兜底
+// ============================================
+// Bootstrap 5.3 的 .btn-* 把颜色写死在 --bs-btn-* 上，不会跟随上面的 --bs-primary；
+// 这里补齐管理端常用的原生按钮与表单焦点，保证全站色调一致。
+@mixin bs-btn-theme($color, $rgb) {
+  $hover: color.adjust($color, $lightness: -8%);
+  --bs-btn-bg: #{$color};
+  --bs-btn-border-color: #{$color};
+  --bs-btn-hover-bg: #{$hover};
+  --bs-btn-hover-border-color: #{$hover};
+  --bs-btn-active-bg: #{$hover};
+  --bs-btn-active-border-color: #{$hover};
+  --bs-btn-disabled-bg: #{$color};
+  --bs-btn-disabled-border-color: #{$color};
+  --bs-btn-focus-shadow-rgb: #{$rgb};
+}
+
+.admin-layout {
+  .btn-primary {
+    @include bs-btn-theme($primary, '75, 98, 232');
+    box-shadow: 0 2px 6px rgba($primary, 0.22);
+  }
+  .btn-secondary { @include bs-btn-theme($secondary, '100, 116, 139'); }
+  .btn-success { @include bs-btn-theme($success, '16, 185, 129'); }
+  .btn-info { @include bs-btn-theme($info, '56, 163, 241'); }
+  .btn-warning { @include bs-btn-theme($warning, '245, 158, 11'); }
+  .btn-danger { @include bs-btn-theme($danger, '239, 68, 68'); }
+
+  .btn-outline-primary {
+    --bs-btn-color: #{$primary};
+    --bs-btn-border-color: #{$primary};
+    --bs-btn-hover-bg: #{$primary};
+    --bs-btn-hover-border-color: #{$primary};
+    --bs-btn-active-bg: #{$primary};
+    --bs-btn-active-border-color: #{$primary};
+    --bs-btn-focus-shadow-rgb: 75, 98, 232;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: rgba($primary, 0.5);
+    box-shadow: 0 0 0 0.25rem rgba($primary, 0.16);
+  }
+}
+
+// ============================================
 // 按钮样式
 // ============================================
 .btn-admin {
@@ -1002,9 +1176,9 @@ $sidebar-collapsed-width: 64px;
   &::-webkit-scrollbar { width: 6px; height: 6px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #c1c7cd;
+    background: rgba($text-muted, 0.45);
     border-radius: 3px;
-    &:hover { background: #a1a7ad; }
+    &:hover { background: rgba($text-secondary, 0.6); }
   }
 }
 
@@ -1012,9 +1186,9 @@ $sidebar-collapsed-width: 64px;
   &::-webkit-scrollbar { width: 6px; height: 6px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: #c1c7cd;
+    background: rgba($text-muted, 0.45);
     border-radius: 3px;
-    &:hover { background: #a1a7ad; }
+    &:hover { background: rgba($text-secondary, 0.6); }
   }
 }
 
